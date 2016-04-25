@@ -1,0 +1,35 @@
+name: RankUpper
+main: br.net.fabiozumbi12.RankUpper.RankUpper
+version: 2.1
+author: FabioZumbi12
+description: Promote player ranks automatically based on some requeriments.
+softdepend: [Vault, Autorank]
+commands:
+  RankUpper:
+    description: "Main command for RankUpper."
+    usage: "Error, use '/ru ?' to see the commands."
+    aliases: [ru, ar]
+permissions:
+  rankupper.*:
+    description: "All rankupper commands."
+    default: op
+    children:
+      rankupper.user: true
+      rankupper.admin: true
+  rankupper.user:
+    description: "User commands for rankupper."
+    default: true
+    children:
+      rankupper.check: true
+      rankupper.top: true
+  rankupper.admin:
+    description: "Admin commands for rankupper."
+    default: false
+    children:
+      rankupper.reload: true
+      rankupper.check.others: true
+      rankupper.set: true
+      rankupper.artoru: true
+      rankupper.save-all: true
+      rankupper.load-all: true
+      rankupper.player-info: true
