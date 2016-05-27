@@ -6,6 +6,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
@@ -14,6 +16,7 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.service.economy.EconomyService;
+import org.spongepowered.api.text.Text;
 
 @Plugin(id="br.net.fabiozumbi12.rankupper", 
 name="RankUpper", 
@@ -28,7 +31,7 @@ public class RankUpper {
 	public static EconomyService econ;
 	public static RUConfig cfgs;
 	public static PermsAPI perms;
-
+	
 	@Listener
 	public void onServerStart(GameStartedServerEvent event) {
         try {
@@ -40,7 +43,17 @@ public class RankUpper {
             RULang.init();
             perms = new PermsAPI(game);
             
-            game.getCommandManager().register(plugin, new RUCommands(), Arrays.asList("rankupper","rupper","rank","ru"));
+            
+            CommandSpec cs = CommandSpec.builder()
+            	    .executor(new RUCommands())
+            	    .arguments(GenericArguments.seq(
+            	    		GenericArguments.onlyOne(GenericArguments.string(Text.of("0"))),
+            	    		GenericArguments.optional(GenericArguments.string(Text.of("1")))),
+            	    		GenericArguments.optional(GenericArguments.string(Text.of("2"))))
+            	    		.extendedDescription(Text.of("Para mais info use /ru help"))
+            	    .build();
+            
+            game.getCommandManager().register(plugin, cs, Arrays.asList("rankupper","rupper","rank","ru"));
             game.getEventManager().registerListeners(plugin, new RUListener());
             PlayerCounterHandler();
             AutoSaveHandler();
