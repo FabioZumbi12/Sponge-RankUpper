@@ -20,7 +20,7 @@ import org.spongepowered.api.text.Text;
 
 @Plugin(id="br.net.fabiozumbi12.rankupper", 
 name="RankUpper", 
-version="2.1", 
+version="2.2", 
 authors="FabioZumbi12", 
 description="Auto rankup plugin based on economy, time or xps")
 public class RankUpper {

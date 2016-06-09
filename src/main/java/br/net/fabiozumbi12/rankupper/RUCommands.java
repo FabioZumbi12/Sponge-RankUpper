@@ -107,6 +107,50 @@ public class RUCommands implements CommandExecutor{
 		if (sender instanceof Player){
 			Player p = (Player) sender;
 			
+			if (args.hasAny("2")){
+				if (args.<String>getOne("0").get().equalsIgnoreCase("set") && p.hasPermission("rankupper.set")) {					
+					if (RUUtil.getUser(args.<String>getOne("1").get()) != null){
+						try {
+							int time = Integer.parseInt(args.<String>getOne("2").get());
+							RankUpper.cfgs.setPlayerTime(RankUpper.cfgs.getPlayerKey(RUUtil.getUser(args.<String>getOne("1").get())), time);
+							RULang.sendMessage(p, RULang.get("commands.setto").replace("{time}", RUUtil.timeDescript(time)).replace("{player}", args.<String>getOne("1").get()));
+						} catch (Exception e){
+							RULang.sendMessage(p, RULang.get("commands.notnumber").replace("{arg}", args.<String>getOne("2").get()));
+						}
+					} else {
+						RULang.sendMessage(p, RULang.get("commands.unknownplayer").replace("{player}", args.<String>getOne("1").get()));
+					}
+					return cmdr;
+				}
+			}
+			
+			if (args.hasAny("1")){
+				if (args.<String>getOne("0").get().equalsIgnoreCase("check") && p.hasPermission("rankupper.check.others")) {
+					if (RUUtil.getUser(args.<String>getOne("1").get()) != null){
+						SendCheckMessage(sender, RUUtil.getUser(args.<String>getOne("1").get()));
+					} else {					
+						RULang.sendMessage(p, RULang.get("commands.unknownplayer").replace("{player}", args.<String>getOne("1").get()));
+					}					
+					return cmdr;
+				}
+				
+				if (args.<String>getOne("0").get().equalsIgnoreCase("player-info") && p.hasPermission("rankupper.player-info")) {
+					HashMap<String, Object> pdb = new HashMap<String, Object>();
+					if (RankUpper.cfgs.getPlayerDB(RUUtil.getUser(args.<String>getOne("1").get())) != null){
+						pdb = RankUpper.cfgs.getPlayerDB(RUUtil.getUser(args.<String>getOne("1").get()));
+						RULang.sendMessage(p, "Player Info:");
+						p.sendMessage(RUUtil.toText("&3- Nick: &b" + pdb.get("PlayerName")));
+						p.sendMessage(RUUtil.toText("&3- Joind Date: &b" + pdb.get("JoinDate")));
+						p.sendMessage(RUUtil.toText("&3- Last Visit: &b" + pdb.get("LastVisist")));
+						p.sendMessage(RUUtil.toText("&3- Time Played: &b" + RUUtil.timeDescript(Integer.parseInt((String)pdb.get("TimePlayed")))));
+			    		return cmdr;
+					} else {
+						RULang.sendMessage(p, RULang.get("commands.unknownplayer").replace("{player}", args.<String>getOne("1").get()));
+						return cmdr;
+					}					
+		    	}
+			}		
+			
 			if (args.hasAny("0")){
 				if (args.<String>getOne("0").get().equalsIgnoreCase("reload") && p.hasPermission("rankupper.reload")) {
 					RankUpper.reload();
@@ -137,53 +181,8 @@ public class RUCommands implements CommandExecutor{
 				if (args.<String>getOne("0").get().equalsIgnoreCase("top") && p.hasPermission("rankupper.top")) {
 					ExecuteTopCount(p);
 					return cmdr;
-				}
-				
-			}
-			
-			if (args.hasAny("1")){
-				if (args.<String>getOne("0").get().equalsIgnoreCase("check") && p.hasPermission("rankupper.check.others")) {
-					if (RUUtil.getUser(args.<String>getOne("1").get()) != null){
-						SendCheckMessage(sender, RUUtil.getUser(args.<String>getOne("1").get()));
-					} else {					
-						RULang.sendMessage(p, RULang.get("commands.unknownplayer").replace("{player}", args.<String>getOne("1").get()));
-					}					
-					return cmdr;
-				}
-				
-				if (args.<String>getOne("0").get().equalsIgnoreCase("player-info") && p.hasPermission("rankupper.player-info")) {
-					HashMap<String, Object> pdb = new HashMap<String, Object>();
-					if (RankUpper.cfgs.getPlayerDB(RUUtil.getUser(args.<String>getOne("1").get())) != null){
-						pdb = RankUpper.cfgs.getPlayerDB(RUUtil.getUser(args.<String>getOne("1").get()));
-						RULang.sendMessage(p, "Player Info:");
-						p.sendMessage(RUUtil.toText("&3- Nick: &b" + pdb.get("PlayerName")));
-						p.sendMessage(RUUtil.toText("&3- Joind Date: &b" + pdb.get("JoinDate")));
-						p.sendMessage(RUUtil.toText("&3- Last Visit: &b" + pdb.get("LastVisist")));
-						p.sendMessage(RUUtil.toText("&3- Time Played: &b" + RUUtil.timeDescript(Integer.parseInt((String)pdb.get("TimePlayed")))));
-			    		return cmdr;
-					} else {
-						RULang.sendMessage(p, RULang.get("commands.unknownplayer").replace("{player}", args.<String>getOne("1").get()));
-						return cmdr;
-					}					
-		    	}
-			}		
-			
-			if (args.hasAny("2")){
-				if (args.<String>getOne("0").get().equalsIgnoreCase("set") && p.hasPermission("rankupper.set")) {					
-					if (RUUtil.getUser(args.<String>getOne("1").get()) != null){
-						try {
-							int time = Integer.parseInt(args.<String>getOne("2").get());
-							RankUpper.cfgs.setPlayerTime(RankUpper.cfgs.getPlayerKey(RUUtil.getUser(args.<String>getOne("1").get())), time);
-							RULang.sendMessage(p, RULang.get("commands.setto").replace("{time}", RUUtil.timeDescript(time)).replace("{player}", args.<String>getOne("1").get()));
-						} catch (Exception e){
-							RULang.sendMessage(p, RULang.get("commands.notnumber").replace("{arg}", args.<String>getOne("2").get()));
-						}
-					} else {
-						RULang.sendMessage(p, RULang.get("commands.unknownplayer").replace("{player}", args.<String>getOne("1").get()));
-					}
-					return cmdr;
-				}
-			}
+				}				
+			}			
 			
 			if (args.hasAny("2")){
 				if (args.<String>getOne("0").get().equalsIgnoreCase("add") && p.hasPermission("rankupper.add")) {					
@@ -204,33 +203,39 @@ public class RUCommands implements CommandExecutor{
 		
 		//if console
 		else {
-			if (args.hasAny("0")){
-				
-				if (args.<String>getOne("0").get().equalsIgnoreCase("reload")) {
-					RankUpper.reload();
-					RULogger.sucess(RankUpper.plugin.getName() + " reloaded!");
-		    		return cmdr;
-		    	}
-				
-				if (args.<String>getOne("0").get().equalsIgnoreCase("save-all")) {
-					RankUpper.cfgs.savePlayersStats();
-					RULogger.sucess("Player stats Saved!");
-		    		return cmdr;
-		    	}
-				
-				if (args.<String>getOne("0").get().equalsIgnoreCase("load-all")) {
-					RankUpper.cfgs.loadPlayerStats();
-					RULogger.sucess("Player stats Loaded!");
-		    		return cmdr;
-		    	}
-				
-				if (args.<String>getOne("0").get().equalsIgnoreCase("top")) {
-					ExecuteTopCount(sender);
+			
+			if (args.hasAny("2")){
+				if (args.<String>getOne("0").get().equalsIgnoreCase("set")) {					
+					if (RUUtil.getUser(args.<String>getOne("1").get()) != null){
+						try {
+							int time = Integer.parseInt(args.<String>getOne("2").get());
+							RankUpper.cfgs.setPlayerTime(RankUpper.cfgs.getPlayerKey(RUUtil.getUser(args.<String>getOne("1").get())), time);
+							sender.sendMessage(RUUtil.toText(RULang.get("commands.setto").replace("{time}", RUUtil.timeDescript(time)).replace("{player}", args.<String>getOne("1").get())));
+						} catch (Exception e){
+							sender.sendMessage(RUUtil.toText(RULang.get("commands.notnumber").replace("{arg}", args.<String>getOne("2").get())));
+						}
+					} else {
+						sender.sendMessage(RUUtil.toText(RULang.get("commands.unknownplayer").replace("{player}", args.<String>getOne("1").get())));
+					}
 					return cmdr;
-				}				
+				}
+				
+				if (args.<String>getOne("0").get().equalsIgnoreCase("add")) {					
+					if (RUUtil.getUser(args.<String>getOne("1").get()) != null){
+						try {
+							int time = Integer.parseInt(args.<String>getOne("2").get());
+							sender.sendMessage(RUUtil.toText(RULang.get("commands.added").replace("{time}", RUUtil.timeDescript(RankUpper.cfgs.addPlayerTime(RUUtil.getUser(args.<String>getOne("1").get()), time))).replace("{player}", args.<String>getOne("1").get())));
+						} catch (Exception e){
+							sender.sendMessage(RUUtil.toText(RULang.get("commands.notnumber").replace("{arg}", args.<String>getOne("2").get())));
+						}
+					} else {
+						sender.sendMessage(RUUtil.toText(RULang.get("commands.unknownplayer").replace("{player}", args.<String>getOne("1").get())));
+					}
+					return cmdr;
+				}
 			}
 			
-			if (args.hasAny("1")){
+            if (args.hasAny("1")){
 				
 				if (args.<String>getOne("0").get().equalsIgnoreCase("player-info")) {
 					HashMap<String, Object> pdb = new HashMap<String, Object>();
@@ -262,40 +267,35 @@ public class RUCommands implements CommandExecutor{
 					return cmdr;
 				}
 			}
-			
-			if (args.hasAny("2")){
-				if (args.<String>getOne("0").get().equalsIgnoreCase("set")) {					
-					if (RUUtil.getUser(args.<String>getOne("1").get()) != null){
-						try {
-							int time = Integer.parseInt(args.<String>getOne("2").get());
-							RankUpper.cfgs.setPlayerTime(RankUpper.cfgs.getPlayerKey(RUUtil.getUser(args.<String>getOne("1").get())), time);
-							sender.sendMessage(RUUtil.toText(RULang.get("commands.setto").replace("{time}", RUUtil.timeDescript(time)).replace("{player}", args.<String>getOne("1").get())));
-						} catch (Exception e){
-							sender.sendMessage(RUUtil.toText(RULang.get("commands.notnumber").replace("{arg}", args.<String>getOne("2").get())));
-						}
-					} else {
-						sender.sendMessage(RUUtil.toText(RULang.get("commands.unknownplayer").replace("{player}", args.<String>getOne("1").get())));
-					}
-					return cmdr;
-				}
+
+			if (args.hasAny("0")){
 				
-				if (args.<String>getOne("0").get().equalsIgnoreCase("add")) {					
-					if (RUUtil.getUser(args.<String>getOne("1").get()) != null){
-						try {
-							int time = Integer.parseInt(args.<String>getOne("2").get());
-							sender.sendMessage(RUUtil.toText(RULang.get("commands.added").replace("{time}", RUUtil.timeDescript(RankUpper.cfgs.addPlayerTime(RUUtil.getUser(args.<String>getOne("1").get()), time))).replace("{player}", args.<String>getOne("1").get())));
-						} catch (Exception e){
-							sender.sendMessage(RUUtil.toText(RULang.get("commands.notnumber").replace("{arg}", args.<String>getOne("2").get())));
-						}
-					} else {
-						sender.sendMessage(RUUtil.toText(RULang.get("commands.unknownplayer").replace("{player}", args.<String>getOne("1").get())));
-					}
+				if (args.<String>getOne("0").get().equalsIgnoreCase("reload")) {
+					RankUpper.reload();
+					RULogger.sucess(RankUpper.plugin.getName() + " reloaded!");
+		    		return cmdr;
+		    	}
+				
+				if (args.<String>getOne("0").get().equalsIgnoreCase("save-all")) {
+					RankUpper.cfgs.savePlayersStats();
+					RULogger.sucess("Player stats Saved!");
+		    		return cmdr;
+		    	}
+				
+				if (args.<String>getOne("0").get().equalsIgnoreCase("load-all")) {
+					RankUpper.cfgs.loadPlayerStats();
+					RULogger.sucess("Player stats Loaded!");
+		    		return cmdr;
+		    	}
+				
+				if (args.<String>getOne("0").get().equalsIgnoreCase("top")) {
+					ExecuteTopCount(sender);
 					return cmdr;
-				}
-			}			
+				}				
+			}								
 		}
 		sendHelp(sender);
-		return CommandResult.empty();
+		return cmdr;
 	}
 
 }
