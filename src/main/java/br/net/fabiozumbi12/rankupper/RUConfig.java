@@ -370,6 +370,7 @@ public class RUConfig{
 			return true;
 		}
 		if (RankUpper.cfgs.getString("ranked-groups." + group + ".next-group") != null){
+			String newGroup = RankUpper.cfgs.getString("ranked-groups." + group + ".next-group");
 			int timeNeeded = getInt("ranked-groups."+ group +".minutes-needed");
 			//Check time
 			if (getPlayerTime(getPlayerKey(p)) >= timeNeeded){
@@ -384,11 +385,11 @@ public class RUConfig{
 				}
 				
 				for (String cmd:getStringList("ranked-groups."+ group +".execute-commands")){
-					RankUpper.game.getCommandManager().process(Sponge.getServer().getConsole(), cmd.replace("{player}", p.getName()));
+					RankUpper.game.getCommandManager().process(Sponge.getServer().getConsole(), cmd.replace("{player}", p.getName()).replace("{oldgroup}", group).replace("{newgroup}", newGroup));
 				}
 				String message = getString("ranked-groups."+ group +".message-broadcast");	
 				if (!message.equals("")){
-					Sponge.getServer().getBroadcastChannel().send(RUUtil.toText(message.replace("{player}", p.getName()).replace("{time}", RUUtil.timeDescript(timeNeeded))));
+					Sponge.getServer().getBroadcastChannel().send(RUUtil.toText(message.replace("{player}", p.getName()).replace("{time}", RUUtil.timeDescript(timeNeeded)).replace("{newgroup}", newGroup)));
 				}			
 				
 				/*
