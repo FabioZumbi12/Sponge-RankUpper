@@ -20,7 +20,7 @@ import org.spongepowered.api.text.Text;
 
 @Plugin(id="br.net.fabiozumbi12.rankupper", 
 name="RankUpper", 
-version="2.2", 
+version="2.3", 
 authors="FabioZumbi12", 
 description="Auto rankup plugin based on economy, time or xps")
 public class RankUpper {
@@ -48,8 +48,11 @@ public class RankUpper {
             	    .executor(new RUCommands())
             	    .arguments(GenericArguments.seq(
             	    		GenericArguments.onlyOne(GenericArguments.string(Text.of("0"))),
-            	    		GenericArguments.optional(GenericArguments.string(Text.of("1")))),
-            	    		GenericArguments.optional(GenericArguments.string(Text.of("2"))))
+            	    		GenericArguments.optional(GenericArguments.string(Text.of("1"))),
+            	    		GenericArguments.optional(GenericArguments.string(Text.of("2"))),
+            	    		GenericArguments.optional(GenericArguments.integer(Text.of("3"))),
+            	    		GenericArguments.optional(GenericArguments.integer(Text.of("4"))),
+            	    		GenericArguments.optional(GenericArguments.integer(Text.of("5")))))
             	    		.extendedDescription(Text.of("Para mais info use /ru help"))
             	    .build();
             

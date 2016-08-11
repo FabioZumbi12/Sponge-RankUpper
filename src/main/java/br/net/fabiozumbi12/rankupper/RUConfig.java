@@ -2,6 +2,7 @@ package br.net.fabiozumbi12.rankupper;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -197,7 +198,7 @@ public class RUConfig{
     	return null;
     }
     
-    private CommentedConfigurationNode getNodes(String key){    	
+    private CommentedConfigurationNode getNodes(String key) {    	
     	String[] args = key.split("\\.");
     	if (args.length == 1){
     		return configNode.getNode(args[0]);
@@ -362,6 +363,49 @@ public class RUConfig{
 		}
 	}
 	
+	private boolean groupExists(String group){
+		return RankUpper.cfgs.getString("ranked-groups." + group + ".next-group") != null;
+	}
+	
+	public Boolean addGroup(String group, String newGroup, int time, int levels, int money) {
+		if (groupExists(group)){
+			return false;
+		}	
+		
+		List<String> cmds = Arrays.asList("pex user {player} parent delete group {oldgroup}","pex user {player} parent add group {newgroup}");
+		try {			
+			getNodes("ranked-groups." + group + ".execute-commands").setValue(cmds);
+			getNodes("ranked-groups." + group + ".message-broadcast").setValue(TypeToken.of(String.class), "&a>> The player &6{player} &ahas played for &6{time} &aand now is rank {newgroup} on server.");
+			getNodes("ranked-groups." + group + ".minutes-needed").setValue(TypeToken.of(Integer.class), time);
+			getNodes("ranked-groups." + group + ".levels-needed").setValue(TypeToken.of(Integer.class), levels);
+			getNodes("ranked-groups." + group + ".money-needed").setValue(TypeToken.of(Integer.class), money);
+			getNodes("ranked-groups." + group + ".next-group").setValue(TypeToken.of(String.class), newGroup);
+		} catch (ObjectMappingException e) {
+			e.printStackTrace();
+			return false;
+		}
+		save();
+		return true;
+	}
+	
+	public Boolean setGroup(String group, String newGroup, int time, int levels, int money) {
+		if (!groupExists(group)){
+			return false;
+		}	
+		
+		try {
+			getNodes("ranked-groups." + group + ".minutes-needed").setValue(TypeToken.of(Integer.class), time);
+			getNodes("ranked-groups." + group + ".levels-needed").setValue(TypeToken.of(Integer.class), levels);
+			getNodes("ranked-groups." + group + ".money-needed").setValue(TypeToken.of(Integer.class), money);
+			getNodes("ranked-groups." + group + ".next-group").setValue(TypeToken.of(String.class), newGroup);
+		} catch (ObjectMappingException e) {
+			e.printStackTrace();
+			return false;
+		}
+		save();
+		return true;
+	}
+	
 	public Boolean checkRankup(User p){
 		String group = RankUpper.perms.getGroup(p);
 		if (group == null && p.isOnline()){
@@ -369,7 +413,7 @@ public class RUConfig{
 			RULang.sendMessage(p.getPlayer().get(), RULang.get("commands.check.youplayed").replace("{time}", RUUtil.timeDescript(time)).replace("{group}", "None"));
 			return true;
 		}
-		if (RankUpper.cfgs.getString("ranked-groups." + group + ".next-group") != null){
+		if (groupExists(group)){
 			String newGroup = RankUpper.cfgs.getString("ranked-groups." + group + ".next-group");
 			int timeNeeded = getInt("ranked-groups."+ group +".minutes-needed");
 			//Check time
@@ -379,9 +423,11 @@ public class RUConfig{
 					return false;
 				}			
 				//Check money
-				UniqueAccount acc = RankUpper.econ.getOrCreateAccount(p.getUniqueId()).get();
-				if (acc.getBalance(RankUpper.econ.getDefaultCurrency()).intValue() < getInt("ranked-groups."+ group +".money-needed")){
-					return false;
+				if (RankUpper.econ != null){
+					UniqueAccount acc = RankUpper.econ.getOrCreateAccount(p.getUniqueId()).get();
+					if (acc.getBalance(RankUpper.econ.getDefaultCurrency()).intValue() < getInt("ranked-groups."+ group +".money-needed")){
+						return false;
+					}
 				}
 				
 				for (String cmd:getStringList("ranked-groups."+ group +".execute-commands")){

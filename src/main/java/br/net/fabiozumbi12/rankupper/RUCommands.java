@@ -2,6 +2,8 @@ package br.net.fabiozumbi12.rankupper;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
+
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -107,6 +109,63 @@ public class RUCommands implements CommandExecutor{
 		if (sender instanceof Player){
 			Player p = (Player) sender;
 			
+            if (args.hasAny("5")){
+            	
+            	//ru addgroup <group> <newgroup> <minutes> <levels> <money> 
+				if (args.<String>getOne("0").get().equalsIgnoreCase("addgroup") && p.hasPermission("rankupper.addgroup")) {
+					//tests
+					int time = 0;
+					int levels = 0;
+					int money = 0;
+					String group = "";
+					String newGroup = "";
+					try {
+						group = args.<String>getOne("1").get();
+						newGroup = args.<String>getOne("2").get();
+						time = args.<Integer>getOne("3").get();
+						levels = args.<Integer>getOne("4").get();
+						money = args.<Integer>getOne("5").get();
+					} catch (NoSuchElementException ex){
+						RULang.sendMessage(p, RULang.get("commands.help.addgroup"));
+						return cmdr;
+					}
+					
+					if (RankUpper.cfgs.addGroup(group, newGroup, time, levels, money)){						
+						RULang.sendMessage(p, RULang.get("config.addedgroup"));
+					} else {
+						RULang.sendMessage(p, RULang.get("config.notaddedgroup"));
+					}	
+					return cmdr;
+				}
+				
+				//ru setgroup <group> <newgroup> <minutes> <levels> <money> 
+				if (args.<String>getOne("0").get().equalsIgnoreCase("setgroup") && p.hasPermission("rankupper.setgroup")) {
+					//tests
+					int time = 0;
+					int levels = 0;
+					int money = 0;
+					String group = "";
+					String newGroup = "";
+					try {
+						group = args.<String>getOne("1").get();
+						newGroup = args.<String>getOne("2").get();
+						time = args.<Integer>getOne("3").get();
+						levels = args.<Integer>getOne("4").get();
+						money = args.<Integer>getOne("5").get();
+					} catch (NoSuchElementException ex){
+						RULang.sendMessage(p, RULang.get("commands.help.setgroup"));
+						return cmdr;
+					}
+					
+					if (RankUpper.cfgs.setGroup(group, newGroup, time, levels, money)){						
+						RULang.sendMessage(p, RULang.get("config.setgroup"));
+					} else {
+						RULang.sendMessage(p, RULang.get("config.notsetgroup"));
+					}	
+					return cmdr;
+				}
+            }
+            
 			if (args.hasAny("2")){
 				if (args.<String>getOne("0").get().equalsIgnoreCase("set") && p.hasPermission("rankupper.set")) {					
 					if (RUUtil.getUser(args.<String>getOne("1").get()) != null){
@@ -137,6 +196,8 @@ public class RUCommands implements CommandExecutor{
 					return cmdr;
 				}
 			}
+			
+			
 			
 			if (args.hasAny("1")){
 				if (args.<String>getOne("0").get().equalsIgnoreCase("check") && p.hasPermission("rankupper.check-others")) {
