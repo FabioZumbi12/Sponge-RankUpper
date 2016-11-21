@@ -18,7 +18,7 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.text.Text;
 
-@Plugin(id="br.net.fabiozumbi12.rankupper", 
+@Plugin(id="rankupper", 
 name="RankUpper", 
 version="2.3", 
 authors="FabioZumbi12", 
