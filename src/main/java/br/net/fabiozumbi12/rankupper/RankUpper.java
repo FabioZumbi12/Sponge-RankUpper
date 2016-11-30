@@ -36,7 +36,7 @@ public class RankUpper {
 	public void onServerStart(GameStartedServerEvent event) {
         try {
         	game = Sponge.getGame();    	
-        	plugin = Sponge.getPluginManager().getPlugin("br.net.fabiozumbi12.rankupper").get();
+        	plugin = Sponge.getPluginManager().getPlugin("rankupper").get();
             configDir = game.getConfigManager().getSharedConfig(RankUpper.plugin).getDirectory()+File.separator+"RankUpper"+File.separator;
             
             cfgs = new RUConfig(plugin);
