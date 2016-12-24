@@ -1,6 +1,7 @@
 package br.net.fabiozumbi12.rankupper;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -45,47 +46,49 @@ public class RUCommands implements CommandExecutor{
 
 	private void SendCheckMessage(CommandSource sender, User playerToCheck) {
 		int time = RankUpper.cfgs.getPlayerTime(RankUpper.cfgs.getPlayerKey(playerToCheck));
-		String pgroup = RankUpper.perms.getGroup(playerToCheck);
-		if (pgroup == null){
-			RULang.sendMessage(sender, RULang.get("commands.check.youplayed").replace("{time}", RUUtil.timeDescript(time)).replace("{group}", "None"));
-			return;
-		}
-		RULang.sendMessage(sender, RULang.get("commands.check.youplayed").replace("{time}", RUUtil.timeDescript(time)).replace("{group}", pgroup));
-		
-		String ngroup = RankUpper.cfgs.getString("ranked-groups."+ pgroup +".next-group");					
-		if (ngroup != null && !ngroup.equals("")){
-			RULang.sendMessage(sender, RULang.get("commands.nextgroup").replace("{group}", ngroup));
-			int minutesNeeded = RankUpper.cfgs.getInt("ranked-groups."+ pgroup +".minutes-needed");
-			int moneyNeeded = RankUpper.cfgs.getInt("ranked-groups."+ pgroup +".money-needed");
-			int levelNeeded = RankUpper.cfgs.getInt("ranked-groups."+ pgroup +".levels-needed");
-			
-			if (minutesNeeded != 0){
-				if (RankUpper.cfgs.getPlayerTime(RankUpper.cfgs.getPlayerKey(playerToCheck)) >= minutesNeeded){
-					RULang.sendMessage(sender, RULang.get("config.time") + ": &a" + RUUtil.timeDescript(minutesNeeded) + " " + RULang.get("config.ok"));
-				} else {
-					RULang.sendMessage(sender, RULang.get("config.time") + ": &4" + RUUtil.timeDescript(minutesNeeded));
-				}							
+		List<String> pgroups = RankUpper.perms.getGroups(playerToCheck);
+		for (String pgroup:pgroups){
+			if (pgroup == null){
+				RULang.sendMessage(sender, RULang.get("commands.check.youplayed").replace("{time}", RUUtil.timeDescript(time)).replace("{group}", "None"));
+				return;
 			}
+			RULang.sendMessage(sender, RULang.get("commands.check.youplayed").replace("{time}", RUUtil.timeDescript(time)).replace("{group}", pgroup));
 			
-			if (moneyNeeded != 0){
-				UniqueAccount acc = RankUpper.econ.getOrCreateAccount(playerToCheck.getUniqueId()).get();
-				if (acc.getBalance(RankUpper.econ.getDefaultCurrency()).intValue() >= moneyNeeded){
-					RULang.sendMessage(sender, RULang.get("config.money") + ": &a" + RULang.get("config.cifra") + moneyNeeded + " " + RULang.get("config.ok"));
-				} else {
-					RULang.sendMessage(sender, RULang.get("config.money") + ": &4" + RULang.get("config.cifra") + moneyNeeded);
-				}							
-			}
-			
-			if (levelNeeded != 0){
-				if (!playerToCheck.get(Keys.EXPERIENCE_LEVEL).isPresent()){
-					RULang.sendMessage(sender, RULang.get("config.levels") + ": " + levelNeeded + "Lvs.");
-					return;
+			String ngroup = RankUpper.cfgs.getString("ranked-groups."+ pgroup +".next-group");					
+			if (ngroup != null && !ngroup.equals("")){
+				RULang.sendMessage(sender, RULang.get("commands.nextgroup").replace("{group}", ngroup));
+				int minutesNeeded = RankUpper.cfgs.getInt("ranked-groups."+ pgroup +".minutes-needed");
+				int moneyNeeded = RankUpper.cfgs.getInt("ranked-groups."+ pgroup +".money-needed");
+				int levelNeeded = RankUpper.cfgs.getInt("ranked-groups."+ pgroup +".levels-needed");
+				
+				if (minutesNeeded != 0){
+					if (RankUpper.cfgs.getPlayerTime(RankUpper.cfgs.getPlayerKey(playerToCheck)) >= minutesNeeded){
+						RULang.sendMessage(sender, RULang.get("config.time") + ": &a" + RUUtil.timeDescript(minutesNeeded) + " " + RULang.get("config.ok"));
+					} else {
+						RULang.sendMessage(sender, RULang.get("config.time") + ": &4" + RUUtil.timeDescript(minutesNeeded));
+					}							
 				}
-				if (playerToCheck.get(Keys.EXPERIENCE_LEVEL).get() >= levelNeeded){
-					RULang.sendMessage(sender, RULang.get("config.levels") + ": &a" + levelNeeded + "Lvs. " + RULang.get("config.ok"));
-				} else {
-					RULang.sendMessage(sender, RULang.get("config.levels") + ": &4" + levelNeeded + "Lvs.");
-				}							
+				
+				if (moneyNeeded != 0){
+					UniqueAccount acc = RankUpper.econ.getOrCreateAccount(playerToCheck.getUniqueId()).get();
+					if (acc.getBalance(RankUpper.econ.getDefaultCurrency()).intValue() >= moneyNeeded){
+						RULang.sendMessage(sender, RULang.get("config.money") + ": &a" + RULang.get("config.cifra") + moneyNeeded + " " + RULang.get("config.ok"));
+					} else {
+						RULang.sendMessage(sender, RULang.get("config.money") + ": &4" + RULang.get("config.cifra") + moneyNeeded);
+					}							
+				}
+				
+				if (levelNeeded != 0){
+					if (!playerToCheck.get(Keys.EXPERIENCE_LEVEL).isPresent()){
+						RULang.sendMessage(sender, RULang.get("config.levels") + ": " + levelNeeded + "Lvs.");
+						return;
+					}
+					if (playerToCheck.get(Keys.EXPERIENCE_LEVEL).get() >= levelNeeded){
+						RULang.sendMessage(sender, RULang.get("config.levels") + ": &a" + levelNeeded + "Lvs. " + RULang.get("config.ok"));
+					} else {
+						RULang.sendMessage(sender, RULang.get("config.levels") + ": &4" + levelNeeded + "Lvs.");
+					}							
+				}
 			}
 		}		
 	}

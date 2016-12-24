@@ -407,44 +407,46 @@ public class RUConfig{
 	}
 	
 	public Boolean checkRankup(User p){
-		String group = RankUpper.perms.getGroup(p);
-		if (group == null && p.isOnline()){
-			int time = RankUpper.cfgs.getPlayerTime(RankUpper.cfgs.getPlayerKey(p));
-			RULang.sendMessage(p.getPlayer().get(), RULang.get("commands.check.youplayed").replace("{time}", RUUtil.timeDescript(time)).replace("{group}", "None"));
-			return true;
-		}
-		if (groupExists(group)){
-			String newGroup = RankUpper.cfgs.getString("ranked-groups." + group + ".next-group");
-			int timeNeeded = getInt("ranked-groups."+ group +".minutes-needed");
-			//Check time
-			if (getPlayerTime(getPlayerKey(p)) >= timeNeeded){
-				//Check levels
-				if (p.get(Keys.EXPERIENCE_LEVEL).get() < getInt("ranked-groups."+ group +".levels-needed")){
-					return false;
-				}			
-				//Check money
-				if (RankUpper.econ != null){
-					UniqueAccount acc = RankUpper.econ.getOrCreateAccount(p.getUniqueId()).get();
-					if (acc.getBalance(RankUpper.econ.getDefaultCurrency()).intValue() < getInt("ranked-groups."+ group +".money-needed")){
-						return false;
-					}
-				}
-				
-				for (String cmd:getStringList("ranked-groups."+ group +".execute-commands")){
-					RankUpper.game.getCommandManager().process(Sponge.getServer().getConsole(), cmd.replace("{player}", p.getName()).replace("{oldgroup}", group).replace("{newgroup}", newGroup));
-				}
-				String message = getString("ranked-groups."+ group +".message-broadcast");	
-				if (!message.equals("")){
-					Sponge.getServer().getBroadcastChannel().send(RUUtil.toText(message.replace("{player}", p.getName()).replace("{time}", RUUtil.timeDescript(timeNeeded)).replace("{newgroup}", newGroup)));
-				}			
-				
-				/*
-				for (String g:RankUpper.Perms.getGroups()){
-					RankUpper.Perms.playerRemoveGroup(p, g);
-				}
-				RankUpper.Perms.playerAddGroup(p, GroupTo);
-				*/
+		List<String> groups = RankUpper.perms.getGroups(p);
+		for (String group:groups){
+			if (group == null && p.isOnline()){
+				int time = RankUpper.cfgs.getPlayerTime(RankUpper.cfgs.getPlayerKey(p));
+				RULang.sendMessage(p.getPlayer().get(), RULang.get("commands.check.youplayed").replace("{time}", RUUtil.timeDescript(time)).replace("{group}", "None"));
 				return true;
+			}
+			if (groupExists(group)){
+				String newGroup = RankUpper.cfgs.getString("ranked-groups." + group + ".next-group");
+				int timeNeeded = getInt("ranked-groups."+ group +".minutes-needed");
+				//Check time
+				if (getPlayerTime(getPlayerKey(p)) >= timeNeeded){
+					//Check levels
+					if (p.get(Keys.EXPERIENCE_LEVEL).get() < getInt("ranked-groups."+ group +".levels-needed")){
+						return false;
+					}			
+					//Check money
+					if (RankUpper.econ != null){
+						UniqueAccount acc = RankUpper.econ.getOrCreateAccount(p.getUniqueId()).get();
+						if (acc.getBalance(RankUpper.econ.getDefaultCurrency()).intValue() < getInt("ranked-groups."+ group +".money-needed")){
+							return false;
+						}
+					}
+					
+					for (String cmd:getStringList("ranked-groups."+ group +".execute-commands")){
+						RankUpper.game.getCommandManager().process(Sponge.getServer().getConsole(), cmd.replace("{player}", p.getName()).replace("{oldgroup}", group).replace("{newgroup}", newGroup));
+					}
+					String message = getString("ranked-groups."+ group +".message-broadcast");	
+					if (!message.equals("")){
+						Sponge.getServer().getBroadcastChannel().send(RUUtil.toText(message.replace("{player}", p.getName()).replace("{time}", RUUtil.timeDescript(timeNeeded)).replace("{newgroup}", newGroup)));
+					}			
+					
+					/*
+					for (String g:RankUpper.Perms.getGroups()){
+						RankUpper.Perms.playerRemoveGroup(p, g);
+					}
+					RankUpper.Perms.playerAddGroup(p, GroupTo);
+					*/
+					return true;
+				}
 			}
 		}
 		return false;

@@ -1,5 +1,8 @@
 package br.net.fabiozumbi12.rankupper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.permission.PermissionService;
@@ -13,13 +16,14 @@ public class PermsAPI {
 		this.permissionService = game.getServiceManager().getRegistration(PermissionService.class).get().getProvider();
 	}
 	
-	public String getGroup(User player){
-		for (Subject sub:player.getParents()){
+	public List<String> getGroups(User player){
+		List<String> gps = new ArrayList<String>();
+		for (Subject sub:player.getParents()){			
 			if (sub.getContainingCollection().equals(getGroups()) && (sub.getIdentifier() != null)){
-				return sub.getIdentifier();
+				gps.add(sub.getIdentifier());
 			}
 		}
-		return null;	
+		return gps;	
 	}
 	
 	public SubjectCollection getGroups(){
