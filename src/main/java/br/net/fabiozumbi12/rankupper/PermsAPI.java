@@ -27,8 +27,7 @@ public class PermsAPI {
 	}
 	public String getHighestGroup(User player){
 		String best = "";
-		int beb = -1;
-		ArrayList<String> prevPerms = new ArrayList<>();
+		int beb = -1;		
 		for (Subject sub:player.getParents()){
 			if (sub.getContainingCollection().equals(getGroups()) && (sub.getIdentifier() != null)){
 				System.out.println(sub.getIdentifier() + " - " + sub.getParents().size());

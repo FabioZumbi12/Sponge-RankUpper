@@ -1,5 +1,9 @@
 package br.net.fabiozumbi12.rankupper;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
+
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -9,11 +13,6 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
 
 public class RUCommands implements CommandExecutor{
 
@@ -46,7 +45,6 @@ public class RUCommands implements CommandExecutor{
 
 	private void SendCheckMessage(CommandSource sender, User playerToCheck) {
 		int time = RankUpper.cfgs.getPlayerTime(RankUpper.cfgs.getPlayerKey(playerToCheck));
-		List<String> pgroups = RankUpper.perms.getGroups(playerToCheck);
 		String pgroup = RankUpper.perms.getHighestGroup(playerToCheck);
 		if (pgroup == null){
 			RULang.sendMessage(sender, RULang.get("commands.check.youplayed").replace("{time}", RUUtil.timeDescript(time)).replace("{group}", "None"));
