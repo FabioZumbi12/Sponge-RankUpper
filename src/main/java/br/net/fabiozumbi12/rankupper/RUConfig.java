@@ -19,6 +19,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 
 import com.google.common.reflect.TypeToken;
+import org.spongepowered.api.text.Text;
 
 public class RUConfig{
 				
@@ -362,6 +363,10 @@ public class RUConfig{
 			}
 		}
 	}
+
+	public List<String> getExcludedGroups() {
+		return RankUpper.cfgs.getStringList("excluded-groups");
+	}
 	
 	private boolean groupExists(String group){
 		return RankUpper.cfgs.getString("ranked-groups." + group + ".next-group") != null;
@@ -407,8 +412,7 @@ public class RUConfig{
 	}
 	
 	public Boolean checkRankup(User p){
-		List<String> groups = RankUpper.perms.getGroups(p);
-		for (String group:groups){
+		String group = RankUpper.perms.getHighestGroup(p);
 			if (group == null && p.isOnline()){
 				int time = RankUpper.cfgs.getPlayerTime(RankUpper.cfgs.getPlayerKey(p));
 				RULang.sendMessage(p.getPlayer().get(), RULang.get("commands.check.youplayed").replace("{time}", RUUtil.timeDescript(time)).replace("{group}", "None"));
@@ -447,8 +451,9 @@ public class RUConfig{
 					*/
 					return true;
 				}
+			} else {
+				p.getPlayer().get().sendMessage(Text.of("Your current rank is not defined in the config and is not excluded!"));
 			}
-		}
 		return false;
 	}
 }

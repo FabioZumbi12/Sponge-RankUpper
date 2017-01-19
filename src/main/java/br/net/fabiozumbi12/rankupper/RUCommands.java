@@ -317,7 +317,7 @@ public class RUCommands implements CommandExecutor{
 					if (RUUtil.getUser(args.<String>getOne("1").get()) != null){
 						SendCheckMessage(sender, RUUtil.getUser(args.<String>getOne("1").get()));
 					} else {					
-						if (RUUtil.getUser(args.<String>getOne("1").get()) != null){
+						if (args.<String>getOne("1").get() != null){
 							int time = RankUpper.cfgs.getPlayerTime(RankUpper.cfgs.getPlayerKey(RUUtil.getUser(args.<String>getOne("1").get())));
 							RULang.sendMessage(sender, RULang.get("commands.check.otherplayed").replace("{time}", RUUtil.timeDescript(time)));
 						} else {
