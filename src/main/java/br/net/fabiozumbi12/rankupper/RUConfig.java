@@ -363,11 +363,11 @@ public class RUConfig{
 		}
 	}
 	
-	private boolean groupExists(String group){
+	public boolean groupExists(String group){
 		return RankUpper.cfgs.getString("ranked-groups." + group + ".next-group") != null;
 	}
 	
-	public Boolean addGroup(String group, String newGroup, int time, int levels, int money) {
+	public Boolean addGroup(String group, String newGroup, int time, int levels, int money, int index) {
 		if (groupExists(group)){
 			return false;
 		}	
@@ -380,6 +380,7 @@ public class RUConfig{
 			getNodes("ranked-groups." + group + ".levels-needed").setValue(TypeToken.of(Integer.class), levels);
 			getNodes("ranked-groups." + group + ".money-needed").setValue(TypeToken.of(Integer.class), money);
 			getNodes("ranked-groups." + group + ".next-group").setValue(TypeToken.of(String.class), newGroup);
+			getNodes("ranked-groups." + group + ".index").setValue(TypeToken.of(Integer.class), index);
 		} catch (ObjectMappingException e) {
 			e.printStackTrace();
 			return false;
@@ -406,50 +407,55 @@ public class RUConfig{
 		return true;
 	}
 	
-	public Boolean checkRankup(User p){
-		List<String> groups = RankUpper.perms.getGroups(p);
-		for (String group:groups){
-			if (group == null && p.isOnline()){
-				int time = RankUpper.cfgs.getPlayerTime(RankUpper.cfgs.getPlayerKey(p));
-				RULang.sendMessage(p.getPlayer().get(), RULang.get("commands.check.youplayed").replace("{time}", RUUtil.timeDescript(time)).replace("{group}", "None"));
-				return true;
-			}
-			if (groupExists(group)){
-				String newGroup = RankUpper.cfgs.getString("ranked-groups." + group + ".next-group");
-				int timeNeeded = getInt("ranked-groups."+ group +".minutes-needed");
-				//Check time
-				if (getPlayerTime(getPlayerKey(p)) >= timeNeeded){
-					//Check levels
-					if (p.get(Keys.EXPERIENCE_LEVEL).get() < getInt("ranked-groups."+ group +".levels-needed")){
-						return false;
-					}			
-					//Check money
-					if (RankUpper.econ != null){
-						UniqueAccount acc = RankUpper.econ.getOrCreateAccount(p.getUniqueId()).get();
-						if (acc.getBalance(RankUpper.econ.getDefaultCurrency()).intValue() < getInt("ranked-groups."+ group +".money-needed")){
-							return false;
-						}
-					}
-					
-					for (String cmd:getStringList("ranked-groups."+ group +".execute-commands")){
-						RankUpper.game.getCommandManager().process(Sponge.getServer().getConsole(), cmd.replace("{player}", p.getName()).replace("{oldgroup}", group).replace("{newgroup}", newGroup));
-					}
-					String message = getString("ranked-groups."+ group +".message-broadcast");	
-					if (!message.equals("")){
-						Sponge.getServer().getBroadcastChannel().send(RUUtil.toText(message.replace("{player}", p.getName()).replace("{time}", RUUtil.timeDescript(timeNeeded)).replace("{newgroup}", newGroup)));
-					}			
-					
-					/*
-					for (String g:RankUpper.Perms.getGroups()){
-						RankUpper.Perms.playerRemoveGroup(p, g);
-					}
-					RankUpper.Perms.playerAddGroup(p, GroupTo);
-					*/
-					return true;
-				}
+	boolean checkRankup(User p){
+		
+		for (String pg:RankUpper.perms.getGroups(p)){
+			RULogger.debug("Player Groups: "+pg);
+			if (RankUpper.cfgs.getStringList("exclude-groups").contains(pg)){
+				return false;
 			}
 		}
-		return false;
-	}
+		
+		String pgroup = RankUpper.perms.getHighestGroup(p);		
+		RULogger.debug("Group: "+pgroup);
+		
+		String ngroup = RankUpper.cfgs.getString("ranked-groups."+ pgroup +".next-group");
+					
+		if (ngroup == null || ngroup.isEmpty()){
+			return false;
+		}
+						
+		int minutesNeeded = RankUpper.cfgs.getInt("ranked-groups."+ pgroup +".minutes-needed");
+		int moneyNeeded = RankUpper.cfgs.getInt("ranked-groups."+ pgroup +".money-needed");
+		int levelNeeded = RankUpper.cfgs.getInt("ranked-groups."+ pgroup +".levels-needed");
+
+		if (minutesNeeded != 0){
+			if (RankUpper.cfgs.getPlayerTime(RankUpper.cfgs.getPlayerKey(p)) < minutesNeeded){
+				return false;
+			}					
+		}
+
+		if (moneyNeeded != 0){
+			UniqueAccount acc = RankUpper.econ.getOrCreateAccount(p.getUniqueId()).get();
+			if (acc.getBalance(RankUpper.econ.getDefaultCurrency()).intValue() < moneyNeeded){
+				return false;
+			} 
+		}
+
+		if (levelNeeded != 0){				
+			if (p.get(Keys.EXPERIENCE_LEVEL).isPresent() && p.get(Keys.EXPERIENCE_LEVEL).get() < levelNeeded){
+				return false;
+			} 
+		}
+		
+		for (String cmd:getStringList("ranked-groups."+ pgroup +".execute-commands")){
+			RankUpper.game.getCommandManager().process(Sponge.getServer().getConsole(), cmd.replace("{player}", p.getName()).replace("{oldgroup}", pgroup).replace("{newgroup}", ngroup));
+		}
+		String message = getString("ranked-groups."+ pgroup +".message-broadcast");	
+		if (message != null && !message.equals("")){
+			Sponge.getServer().getBroadcastChannel().send(RUUtil.toText(message.replace("{player}", p.getName()).replace("{time}", RUUtil.timeDescript(minutesNeeded)).replace("{newgroup}", ngroup)));
+		}				
+		return true;
+	}	
 }
    

@@ -52,7 +52,8 @@ public class RankUpper {
             	    		GenericArguments.optional(GenericArguments.string(Text.of("2"))),
             	    		GenericArguments.optional(GenericArguments.integer(Text.of("3"))),
             	    		GenericArguments.optional(GenericArguments.integer(Text.of("4"))),
-            	    		GenericArguments.optional(GenericArguments.integer(Text.of("5")))))
+            	    		GenericArguments.optional(GenericArguments.integer(Text.of("5"))),
+            	    		GenericArguments.optional(GenericArguments.integer(Text.of("6")))))
             	    		.extendedDescription(Text.of("Para mais info use /ru help"))
             	    .build();
             

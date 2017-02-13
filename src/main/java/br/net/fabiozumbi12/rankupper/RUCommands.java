@@ -45,50 +45,58 @@ public class RUCommands implements CommandExecutor{
 
 	private void SendCheckMessage(CommandSource sender, User playerToCheck) {
 		int time = RankUpper.cfgs.getPlayerTime(RankUpper.cfgs.getPlayerKey(playerToCheck));
-		String pgroup = RankUpper.perms.getHighestGroup(playerToCheck);
-		if (pgroup == null){
-			RULang.sendMessage(sender, RULang.get("commands.check.youplayed").replace("{time}", RUUtil.timeDescript(time)).replace("{group}", "None"));
+		
+		for (String pg:RankUpper.perms.getGroups(playerToCheck)){
+			RULogger.debug("Player Groups: "+pg);
+			if (RankUpper.cfgs.getStringList("exclude-groups").contains(pg)){
+				RULang.sendMessage(sender, RULang.get("commands.check.youplayed").replace("{time}", RUUtil.timeDescript(time)).replace("{group}", pg));	
+				return;
+			}
+		}
+		
+		String pgroup = RankUpper.perms.getHighestGroup(playerToCheck);			
+		String ngroup = RankUpper.cfgs.getString("ranked-groups."+ pgroup +".next-group");
+				
+		RULang.sendMessage(sender, RULang.get("commands.check.youplayed").replace("{time}", RUUtil.timeDescript(time)).replace("{group}", pgroup));	
+		
+		if (ngroup == null || ngroup.isEmpty()){
 			return;
 		}
-		RULang.sendMessage(sender, RULang.get("commands.check.youplayed").replace("{time}", RUUtil.timeDescript(time)).replace("{group}", pgroup));
+		
+		RULang.sendMessage(sender, RULang.get("commands.nextgroup").replace("{group}", ngroup));
+		
+		int minutesNeeded = RankUpper.cfgs.getInt("ranked-groups."+ pgroup +".minutes-needed");
+		int moneyNeeded = RankUpper.cfgs.getInt("ranked-groups."+ pgroup +".money-needed");
+		int levelNeeded = RankUpper.cfgs.getInt("ranked-groups."+ pgroup +".levels-needed");
 
-		String ngroup = RankUpper.cfgs.getString("ranked-groups."+ pgroup +".next-group");
-		if (ngroup != null && !ngroup.equals("")){
-			RULang.sendMessage(sender, RULang.get("commands.nextgroup").replace("{group}", ngroup));
-			int minutesNeeded = RankUpper.cfgs.getInt("ranked-groups."+ pgroup +".minutes-needed");
-			int moneyNeeded = RankUpper.cfgs.getInt("ranked-groups."+ pgroup +".money-needed");
-			int levelNeeded = RankUpper.cfgs.getInt("ranked-groups."+ pgroup +".levels-needed");
-
-			if (minutesNeeded != 0){
-				if (RankUpper.cfgs.getPlayerTime(RankUpper.cfgs.getPlayerKey(playerToCheck)) >= minutesNeeded){
-					RULang.sendMessage(sender, RULang.get("config.time") + ": &a" + RUUtil.timeDescript(minutesNeeded) + " " + RULang.get("config.ok"));
-				} else {
-					RULang.sendMessage(sender, RULang.get("config.time") + ": &4" + RUUtil.timeDescript(minutesNeeded));
-				}
-			}
-
-			if (moneyNeeded != 0){
-				UniqueAccount acc = RankUpper.econ.getOrCreateAccount(playerToCheck.getUniqueId()).get();
-				if (acc.getBalance(RankUpper.econ.getDefaultCurrency()).intValue() >= moneyNeeded){
-					RULang.sendMessage(sender, RULang.get("config.money") + ": &a" + RULang.get("config.cifra") + moneyNeeded + " " + RULang.get("config.ok"));
-				} else {
-					RULang.sendMessage(sender, RULang.get("config.money") + ": &4" + RULang.get("config.cifra") + moneyNeeded);
-				}
-			}
-
-			if (levelNeeded != 0){
-				if (!playerToCheck.get(Keys.EXPERIENCE_LEVEL).isPresent()){
-					RULang.sendMessage(sender, RULang.get("config.levels") + ": " + levelNeeded + "Lvs.");
-					return;
-				}
-				if (playerToCheck.get(Keys.EXPERIENCE_LEVEL).get() >= levelNeeded){
-					RULang.sendMessage(sender, RULang.get("config.levels") + ": &a" + levelNeeded + "Lvs. " + RULang.get("config.ok"));
-				} else {
-					RULang.sendMessage(sender, RULang.get("config.levels") + ": &4" + levelNeeded + "Lvs.");
-				}
+		if (minutesNeeded != 0){
+			if (RankUpper.cfgs.getPlayerTime(RankUpper.cfgs.getPlayerKey(playerToCheck)) >= minutesNeeded){
+				RULang.sendMessage(sender, RULang.get("config.time") + ": &a" + RUUtil.timeDescript(minutesNeeded) + " " + RULang.get("config.ok"));
+			} else {
+				RULang.sendMessage(sender, RULang.get("config.time") + ": &4" + RUUtil.timeDescript(minutesNeeded));
 			}
 		}
 
+		if (moneyNeeded != 0){
+			UniqueAccount acc = RankUpper.econ.getOrCreateAccount(playerToCheck.getUniqueId()).get();
+			if (acc.getBalance(RankUpper.econ.getDefaultCurrency()).intValue() >= moneyNeeded){
+				RULang.sendMessage(sender, RULang.get("config.money") + ": &a" + RULang.get("config.cifra") + moneyNeeded + " " + RULang.get("config.ok"));
+			} else {
+				RULang.sendMessage(sender, RULang.get("config.money") + ": &4" + RULang.get("config.cifra") + moneyNeeded);
+			}
+		}
+
+		if (levelNeeded != 0){
+			if (!playerToCheck.get(Keys.EXPERIENCE_LEVEL).isPresent()){
+				RULang.sendMessage(sender, RULang.get("config.levels") + ": " + levelNeeded + "Lvs.");
+				return;
+			}
+			if (playerToCheck.get(Keys.EXPERIENCE_LEVEL).get() >= levelNeeded){
+				RULang.sendMessage(sender, RULang.get("config.levels") + ": &a" + levelNeeded + "Lvs. " + RULang.get("config.ok"));
+			} else {
+				RULang.sendMessage(sender, RULang.get("config.levels") + ": &4" + levelNeeded + "Lvs.");
+			}
+		}
 	}
 	
 	void sendHelp(CommandSource source){
@@ -112,7 +120,7 @@ public class RUCommands implements CommandExecutor{
 			
             if (args.hasAny("5")){
             	
-            	//ru addgroup <group> <newgroup> <minutes> <levels> <money> 
+            	//ru addgroup <group> <newgroup> <minutes> <levels> <money> <index>
 				if (args.<String>getOne("0").get().equalsIgnoreCase("addgroup") && p.hasPermission("rankupper.addgroup")) {
 					//tests
 					int time = 0;
@@ -120,18 +128,20 @@ public class RUCommands implements CommandExecutor{
 					int money = 0;
 					String group = "";
 					String newGroup = "";
+					int index = 0;
 					try {
 						group = args.<String>getOne("1").get();
 						newGroup = args.<String>getOne("2").get();
 						time = args.<Integer>getOne("3").get();
 						levels = args.<Integer>getOne("4").get();
 						money = args.<Integer>getOne("5").get();
+						index = args.<Integer>getOne("6").get();
 					} catch (NoSuchElementException ex){
 						RULang.sendMessage(p, RULang.get("commands.help.addgroup"));
 						return cmdr;
 					}
 					
-					if (RankUpper.cfgs.addGroup(group, newGroup, time, levels, money)){						
+					if (RankUpper.cfgs.addGroup(group, newGroup, time, levels, money, index)){						
 						RULang.sendMessage(p, RULang.get("config.addedgroup"));
 					} else {
 						RULang.sendMessage(p, RULang.get("config.notaddedgroup"));

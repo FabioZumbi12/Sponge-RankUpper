@@ -25,12 +25,13 @@ public class PermsAPI {
 		}
 		return gps;
 	}
+	
 	public String getHighestGroup(User player){
 		String best = "";
-		int beb = -1;		
+		int beb = -1;
 		for (Subject sub:player.getParents()){
 			if (sub.getContainingCollection().equals(getGroups()) && (sub.getIdentifier() != null)){
-				System.out.println(sub.getIdentifier() + " - " + sub.getParents().size());
+				RULogger.debug(sub.getIdentifier() + " - " + sub.getParents().size());
 				if(beb < sub.getParents().size()){
 					beb = sub.getParents().size();
 					best = sub.getIdentifier();
