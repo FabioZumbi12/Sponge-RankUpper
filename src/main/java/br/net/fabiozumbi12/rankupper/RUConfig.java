@@ -41,6 +41,8 @@ public class RUConfig{
 	public CommentedConfigurationNode stats(){
 		return statsNode;
 	}
+
+	RankUpper plugin;
 		
 	private CommentedConfigurationNode updateFromIn(CommentedConfigurationNode temp, CommentedConfigurationNode out){
 		for (Object key:temp.getChildrenMap().keySet()){          	
@@ -355,7 +357,12 @@ public class RUConfig{
 	}
 	
 	public void AddPlayerTimes() {
-		for (Player p:Sponge.getServer().getOnlinePlayers()){			
+		for (Player p:Sponge.getServer().getOnlinePlayers()){
+			if(getBool("afk-support")){
+				if(plugin.getRUAFK().isPlayer(p)){
+					return;
+				}
+			}
 			addPlayerTime(p, getInt("update-player-time-minutes"));
 			if (!checkRankup(p)){
 				continue;

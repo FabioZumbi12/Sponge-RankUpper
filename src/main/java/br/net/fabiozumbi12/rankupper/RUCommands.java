@@ -342,19 +342,19 @@ public class RUCommands implements CommandExecutor{
 				
 				if (args.<String>getOne("0").get().equalsIgnoreCase("reload")) {
 					RankUpper.reload();
-					RULogger.sucess(RankUpper.plugin.getName() + " reloaded!");
+					RULogger.success(RankUpper.plugin.getName() + " reloaded!");
 		    		return cmdr;
 		    	}
 				
 				if (args.<String>getOne("0").get().equalsIgnoreCase("save-all")) {
 					RankUpper.cfgs.savePlayersStats();
-					RULogger.sucess("Player stats Saved!");
+					RULogger.success("Player stats Saved!");
 		    		return cmdr;
 		    	}
 				
 				if (args.<String>getOne("0").get().equalsIgnoreCase("load-all")) {
 					RankUpper.cfgs.loadPlayerStats();
-					RULogger.sucess("Player stats Loaded!");
+					RULogger.success("Player stats Loaded!");
 		    		return cmdr;
 		    	}
 				

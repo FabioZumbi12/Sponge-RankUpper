@@ -1,13 +1,15 @@
 package br.net.fabiozumbi12.rankupper;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
@@ -20,7 +22,7 @@ import org.spongepowered.api.text.Text;
 
 @Plugin(id="rankupper", 
 name="RankUpper", 
-version="2.3", 
+version="2.5",
 authors="FabioZumbi12", 
 description="Auto rankup plugin based on economy, time or xps")
 public class RankUpper {
@@ -31,6 +33,7 @@ public class RankUpper {
 	public static EconomyService econ;
 	public static RUConfig cfgs;
 	public static PermsAPI perms;
+	public RUAFK ruafk;
 	
 	@Listener
 	public void onServerStart(GameStartedServerEvent event) {
@@ -42,7 +45,17 @@ public class RankUpper {
             cfgs = new RUConfig(plugin);
             RULang.init();
             perms = new PermsAPI(game);
-            
+
+            if(cfgs.getBool("afk-support")) {
+				if (Sponge.getPluginManager().getPlugin("nucleus").isPresent()) {
+					RULogger.info("Nucleus found. AFK support enabled.");
+				} else {
+					RULogger.info("Nucleus is not installed. AFK support disabled.");
+				}
+			}
+			//Initialize even if not enabled/nucleus not installed - avoid nulls (these wont be called).
+			ruafk = new RUAFK();
+			ruafk.initialize();
             
             CommandSpec cs = CommandSpec.builder()
             	    .executor(new RUCommands())
@@ -54,7 +67,7 @@ public class RankUpper {
             	    		GenericArguments.optional(GenericArguments.integer(Text.of("4"))),
             	    		GenericArguments.optional(GenericArguments.integer(Text.of("5"))),
             	    		GenericArguments.optional(GenericArguments.integer(Text.of("6")))))
-            	    		.extendedDescription(Text.of("Para mais info use /ru help"))
+            	    		.extendedDescription(Text.of("For more info use /ru help"))
             	    .build();
             
             game.getCommandManager().register(plugin, cs, Arrays.asList("rankupper","rupper","rank","ru"));
@@ -62,14 +75,17 @@ public class RankUpper {
             PlayerCounterHandler();
             AutoSaveHandler();
             
-            RULogger.sucess(plugin.getName() + " enabled.");
+            RULogger.success(plugin.getName() + " enabled.");
             
         } catch (Exception e) {
         	e.printStackTrace();
-    		RULogger.severe("Error enabling RankUpper, plugin will shut down.");            
+    		RULogger.severe("Error enabling RankUpper! Plugin Disabled.");
         }
 	}
-	
+	public RUAFK getRUAFK(){
+		//may return null if afk support enabled but nucleus not correctly installed
+		return ruafk;
+	}
         
 	@Listener
 	public void onStopServer(GameStoppingServerEvent e) {
@@ -121,13 +137,12 @@ public class RankUpper {
 				} 
 			},cfgs.getInt("flat-file-save-interval"), cfgs.getInt("flat-file-save-interval"), TimeUnit.MINUTES);	
 	}
-	
-        
+
 }
 
 class RULogger{
 	   
-	public static void sucess(String s) {
+	public static void success(String s) {
 		Sponge.getServer().getConsole().sendMessage(RUUtil.toText("RankUpper: [&a&l"+s+"&r]"));
     }
 	

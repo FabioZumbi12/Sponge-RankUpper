@@ -1,87 +1,98 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>RankUpper</groupId>
-  <artifactId>RankUpper</artifactId>
-  <version>2.2.2</version>
-  <description>RankUpper</description>
-  
-  <dependencies>  
-    <dependency>
-        <groupId>org.spongepowered</groupId>
-        <artifactId>spongeapi</artifactId>
-        <version>${spongeVersion}</version>
-        <scope>provided</scope>
-    </dependency>    
-    
-    <dependency>
-       <groupId>TotalEconomy</groupId>
-       <artifactId>TotalEconomy</artifactId>
-	   <version>v1</version>
-       <scope>system</scope>
-       <systemPath>D:/ProjetosSponge/APIs/TotalEconomy-v1.4.0.jar</systemPath>
-    </dependency> 
-      
-  </dependencies>
-  
-  <scm>
-     <connection>scm:git:git@github.com:FabioZumbi12/Sponge-RankUpper.git</connection>
-     <developerConnection>scm:git:git@github.com:FabioZumbi12/Sponge-RankUpper.git</developerConnection>
-     <url>https://github.com/FabioZumbi12/Sponge-RankUpper/tree/master</url>
-     <tag>${project.version}</tag>
-  </scm>
-  
-  <repositories>
-    <repository>
-        <id>sponge-maven-repo</id>
-        <name>Sponge maven repo</name>
-        <url>http://repo.spongepowered.org/maven</url>
-        <releases>
-            <enabled>true</enabled>
-        </releases>
-        <snapshots>
-            <enabled>true</enabled>
-        </snapshots>
-    </repository>    
-  </repositories>
-  
-  <build>
-    <finalName>${project.name}-${buildNumber}_Sponge</finalName>
-    <defaultGoal>clean install</defaultGoal>
-    <plugins>
-    
-        <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.2</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
-      
-     <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>buildnumber-maven-plugin</artifactId>
-        <version>1.4</version>
-        <executions>
-          <execution>
-            <phase>validate</phase>
-            <goals>
-              <goal>create</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <format>${project.version}-b{0,number}</format>
-          <items>
-            <item>buildNumber0</item>
-          </items>
-        </configuration>
-      </plugin>
-      
-    </plugins>
-  </build>
-  <properties>
-  	<spongeVersion>6.0.0-SNAPSHOT</spongeVersion>
-  </properties>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>RankUpper</groupId>
+    <artifactId>RankUpper</artifactId>
+    <version>2.5</version>
+    <description>RankUpper</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.spongepowered</groupId>
+            <artifactId>spongeapi</artifactId>
+            <version>${spongeVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.nucleuspowered</groupId>
+            <artifactId>nucleus-api</artifactId>
+            <version>${nucleusVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--<dependency>-->
+        <!--<groupId>TotalEconomy</groupId>-->
+        <!--<artifactId>TotalEconomy</artifactId>-->
+        <!--<version>v1</version>-->
+        <!--<scope>system</scope>-->
+        <!--<systemPath>D:/ProjetosSponge/APIs/TotalEconomy-v1.4.0.jar</systemPath>-->
+        <!--</dependency>-->
+    </dependencies>
+    <scm>
+        <connection>scm:git:git@github.com:FabioZumbi12/Sponge-RankUpper.git</connection>
+        <developerConnection>scm:git:git@github.com:FabioZumbi12/Sponge-RankUpper.git</developerConnection>
+        <url>https://github.com/FabioZumbi12/Sponge-RankUpper/tree/master</url>
+        <tag>${project.version}</tag>
+    </scm>
+
+    <repositories>
+        <repository>
+            <id>sponge-maven-repo</id>
+            <name>Sponge maven repo</name>
+            <url>http://repo.spongepowered.org/maven</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>repo-drnaylor</id>
+            <name>dualspiral's repo</name>
+            <url>http://repo.drnaylor.co.uk/artifactory/list/minecraft</url>
+        </repository>
+    </repositories>
+
+    <build>
+        <finalName>${project.name}-${buildNumber}_Sponge</finalName>
+        <defaultGoal>clean install</defaultGoal>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.2</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <format>${project.version}-b{0,number}</format>
+                    <items>
+                        <item>buildNumber0</item>
+                    </items>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+    <properties>
+        <spongeVersion>6.0.0-SNAPSHOT</spongeVersion>
+        <nucleusVersion>0.23.0-SNAPSHOT-S5.1</nucleusVersion>
+    </properties>
 </project>
