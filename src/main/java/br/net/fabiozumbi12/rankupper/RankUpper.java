@@ -50,7 +50,8 @@ public class RankUpper {
 				if (Sponge.getPluginManager().getPlugin("nucleus").isPresent()) {
 					RULogger.info("Nucleus found. AFK support enabled.");
 				} else {
-					RULogger.info("Nucleus is not installed. AFK support disabled.");
+					cfgs.setConfig("afk-support", false);
+					RULogger.info("Nucleus is not installed. AFK support has been disabled in your config.");
 				}
 				//Initialize even if nucleus not installed - avoid nulls (these wont be called).
 				ruafk = new RUAFK();
