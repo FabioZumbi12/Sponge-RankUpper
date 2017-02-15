@@ -52,10 +52,10 @@ public class RankUpper {
 				} else {
 					RULogger.info("Nucleus is not installed. AFK support disabled.");
 				}
+				//Initialize even if nucleus not installed - avoid nulls (these wont be called).
+				ruafk = new RUAFK();
 			}
-			//Initialize even if not enabled/nucleus not installed - avoid nulls (these wont be called).
-			ruafk = new RUAFK();
-			ruafk.initialize();
+
             
             CommandSpec cs = CommandSpec.builder()
             	    .executor(new RUCommands())

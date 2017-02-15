@@ -37,7 +37,7 @@ public class RUListener {
 		if(RankUpper.cfgs.getBool("afk-support")) {
 			Player p = e.getTargetEntity();
 			if(!plugin.getRUAFK().isPlayer(p)){
-			    plugin.getRUAFK().removePlayer(p);
+			    plugin.getRUAFK().addPlayer(p);
             }
 		}
 	}

@@ -12,17 +12,18 @@ public class RUAFK
 {
     private List<Player> afkPlayers;
 
-    public void addPlayer(Player p){
-        afkPlayers.add(p);
-    }
-    public void removePlayer(Player p){
-        afkPlayers.remove(p);
-    }
-    public boolean isPlayer(Player p){
-        return afkPlayers.contains(p);
+    RUAFK() {
+        this.afkPlayers = new ArrayList<>();
     }
 
-    public void initialize() {
-        afkPlayers = new ArrayList<>();
+    public void addPlayer(Player p){
+        this.afkPlayers.add(p);
     }
+    public void removePlayer(Player p){
+        this.afkPlayers.remove(p);
+    }
+    public boolean isPlayer(Player p){
+        return this.afkPlayers.contains(p);
+    }
+
 }
