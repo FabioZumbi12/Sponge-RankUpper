@@ -46,9 +46,11 @@ public class RankUpper {
             RULang.init();
             perms = new PermsAPI(game);
 
-            if(cfgs.getBool("afk-support")) {
+            if(cfgs.getBool("afk-support") || cfgs.getBool("afk-support")==null) {
 				if (Sponge.getPluginManager().getPlugin("nucleus").isPresent()) {
 					RULogger.info("Nucleus found. AFK support enabled.");
+					game.getEventManager().registerListeners(plugin, new RUAFK());
+
 				} else {
 					cfgs.setConfig("afk-support", false);
 					RULogger.info("Nucleus is not installed. AFK support has been disabled in your config.");

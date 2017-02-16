@@ -46,19 +46,16 @@ public class RUCommands implements CommandExecutor{
 	private void SendCheckMessage(CommandSource sender, User playerToCheck) {
 		int time = RankUpper.cfgs.getPlayerTime(RankUpper.cfgs.getPlayerKey(playerToCheck));
 		
-		for (String pg:RankUpper.perms.getGroups(playerToCheck)){
-			RULogger.debug("Player Groups: "+pg);
-			if (RankUpper.cfgs.getStringList("exclude-groups").contains(pg)){
-				RULang.sendMessage(sender, RULang.get("commands.check.youplayed").replace("{time}", RUUtil.timeDescript(time)).replace("{group}", pg));	
-				return;
-			}
+		String pgroup = RankUpper.perms.getHighestGroup(playerToCheck);
+		RULogger.debug("Player Groups: "+pgroup);
+		if(pgroup.isEmpty()) {
+			RULang.sendMessage(sender, RULang.get("commands.check.youplayed").replace("{time}", RUUtil.timeDescript(time)).replace("{group}", "none"));
+		} else {
+			RULang.sendMessage(sender, RULang.get("commands.check.youplayed").replace("{time}", RUUtil.timeDescript(time)).replace("{group}", pgroup));
 		}
-		
-		String pgroup = RankUpper.perms.getHighestGroup(playerToCheck);			
-		String ngroup = RankUpper.cfgs.getString("ranked-groups."+ pgroup +".next-group");
+        String ngroup = RankUpper.cfgs.getString("ranked-groups."+ pgroup +".next-group");
 				
-		RULang.sendMessage(sender, RULang.get("commands.check.youplayed").replace("{time}", RUUtil.timeDescript(time)).replace("{group}", pgroup));	
-		
+
 		if (ngroup == null || ngroup.isEmpty()){
 			return;
 		}

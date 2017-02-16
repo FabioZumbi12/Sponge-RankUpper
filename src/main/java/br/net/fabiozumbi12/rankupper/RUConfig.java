@@ -416,15 +416,11 @@ public class RUConfig{
 	
 	boolean checkRankup(User p){
 		
-		for (String pg:RankUpper.perms.getGroups(p)){
-			RULogger.debug("Player Groups: "+pg);
-			if (RankUpper.cfgs.getStringList("exclude-groups").contains(pg)){
-				return false;
-			}
+		String pgroup = RankUpper.perms.getHighestGroup(p);
+		if(pgroup.isEmpty()){
+			return false;
 		}
-		
-		String pgroup = RankUpper.perms.getHighestGroup(p);		
-		RULogger.debug("Group: "+pgroup);
+		RULogger.debug("Highest Group is: "+pgroup);
 		
 		String ngroup = RankUpper.cfgs.getString("ranked-groups."+ pgroup +".next-group");
 					

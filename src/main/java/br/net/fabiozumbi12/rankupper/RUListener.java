@@ -32,24 +32,6 @@ public class RUListener {
         }
     }
 
-	@Listener
-	public void PlayerGoingAFK(NucleusAFKEvent.GoingAFK e) {
-		if(RankUpper.cfgs.getBool("afk-support")) {
-			Player p = e.getTargetEntity();
-			if(!plugin.getRUAFK().isPlayer(p)){
-			    plugin.getRUAFK().addPlayer(p);
-            }
-		}
-	}
 
-    @Listener
-    public void PlayerReturningFromAFK(NucleusAFKEvent.ReturningFromAFK e) {
-        if(RankUpper.cfgs.getBool("afk-support")) {
-            Player p = e.getTargetEntity();
-            if(plugin.getRUAFK().isPlayer(p)){
-                plugin.getRUAFK().removePlayer(p);
-            }
-        }
-    }
 	
 }

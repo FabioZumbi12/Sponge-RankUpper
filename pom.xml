@@ -21,13 +21,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>TotalEconomy</groupId>-->
-        <!--<artifactId>TotalEconomy</artifactId>-->
-        <!--<version>v1</version>-->
-        <!--<scope>system</scope>-->
-        <!--<systemPath>D:/ProjetosSponge/APIs/TotalEconomy-v1.4.0.jar</systemPath>-->
-        <!--</dependency>-->
     </dependencies>
     <scm>
         <connection>scm:git:git@github.com:FabioZumbi12/Sponge-RankUpper.git</connection>
