@@ -81,7 +81,7 @@ public class RUConfig{
 				e.printStackTrace();
 			}
 			
-			config.getNode("ranked-groups").setComment("All configurations for promote players based on requeriments.");
+			config.getNode("ranked-groups").setComment("All configurations for promote players based on requirements.");
 			if (!config.getNode("ranked-groups").hasMapChildren()){
 				
 				
