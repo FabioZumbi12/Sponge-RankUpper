@@ -20,8 +20,8 @@ public class RUPermsAPI {
 	
 	public List<String> getAllGroups(){
 		List<String> groups = new ArrayList<String>();
-		for (Subject group:getGroups().getAllSubjects()){ 
-			RULogger.severe("group: "+group.getIdentifier()); 
+		for (Subject group:getGroups().getAllSubjects()){
+			RULogger.debug("group: "+group.getIdentifier()); 
 			groups.add(group.getIdentifier());
 		}
 		return groups;
