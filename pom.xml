@@ -1,112 +1,84 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>br.net.fabiozumbi12.rankupper</groupId>
-  <artifactId>RankUpper</artifactId>
-  <version>${pluginVersion}</version>
-  <packaging>pom</packaging>
-  <name>RankUpper</name>
-    
-    <scm>
-        <connection>scm:git:git@github.com:FabioZumbi12/Sponge-RankUpper.git</connection>
-        <developerConnection>scm:git:git@github.com:FabioZumbi12/Sponge-RankUpper.git</developerConnection>
-        <url>https://github.com/FabioZumbi12/Sponge-RankUpper/tree/master</url>
-        <tag>${project.version}</tag>
-    </scm>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>br.net.fabiozumbi12.RankUpper</groupId>
+	<artifactId>RankUpper</artifactId>
+	<version>3.0.2</version>
+	<packaging>pom</packaging>
+	<name>RankUpper</name>
 
-    <repositories>
-        <repository>
-            <id>sponge-maven-repo</id>
-            <name>Sponge maven repo</name>
-            <url>http://repo.spongepowered.org/maven</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>repo-drnaylor</id>
-            <name>dualspiral's repo</name>
-            <url>http://repo.drnaylor.co.uk/artifactory/minecraft</url>
-        </repository>
-    </repositories>
+	<scm>
+		<connection>scm:git:git@github.com:FabioZumbi12/Sponge-RankUpper.git</connection>
+		<developerConnection>scm:git:git@github.com:FabioZumbi12/Sponge-RankUpper.git</developerConnection>
+		<url>https://github.com/FabioZumbi12/Sponge-RankUpper/tree/master</url>
+		<tag>${project.version}</tag>
+	</scm>
 
-    <build>
-        <finalName>${project.name}-${buildNumber}</finalName>
-        <defaultGoal>clean install</defaultGoal>
-        <plugins>
-        <!-- 
-           <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-gpg-plugin</artifactId>
-              <version>1.6</version>
-              <executions>
-                   <execution>
-                   <id>sign-artifacts</id>
-                   <phase>verify</phase>
-                   <goals>
-                      <goal>sign</goal>
-                   </goals>
-                   </execution>
-                </executions>
-            </plugin> -->
-      
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
+	<repositories>
+		<repository>
+			<id>sponge-maven-repo</id>
+			<name>Sponge maven repo</name>
+			<url>http://repo.spongepowered.org/maven</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>repo-drnaylor</id>
+			<name>dualspiral's repo</name>
+			<url>http://repo.drnaylor.co.uk/artifactory/minecraft</url>
+		</repository>
 
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.4</version>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>create</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <format>${project.version}-b{0,number}</format>
-                    <items>
-                        <item>buildNumber0</item>
-                    </items>
-                </configuration>
-            </plugin>
-            
-            <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-             <artifactId>templating-maven-plugin</artifactId>
-            <version>1.0.0</version>
-            <executions>
-               <execution>
-                  <id>filter-src</id>
-                    <goals>
-                      <goal>filter-sources</goal>
-                    </goals>
-               </execution>
-            </executions>
-           </plugin>
-        
-        </plugins>
-        
-    </build>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <pluginVersion>3.0.1</pluginVersion>
-    </properties>
-    
-    <modules>
-      <module>RankUpper-56</module>
-      <module>RankUpper-7</module>
-    </modules>
+	</repositories>
+
+	<build>
+		<finalName>${project.name}-${project.version}</finalName>
+		<resources>
+			<resource>
+				<targetPath>.</targetPath>
+				<filtering>true</filtering>
+				<directory>src/main/resources/</directory>
+			</resource>
+		</resources>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.2</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>templating-maven-plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+					<execution>
+						<id>filter-src</id>
+						<goals>
+							<goal>filter-sources</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+
+	</build>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
+
+	<modules>
+		<module>RankUpper-56</module>
+		<module>RankUpper-78</module>
+	</modules>
 </project>

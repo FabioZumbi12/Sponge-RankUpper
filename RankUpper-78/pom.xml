@@ -1,0 +1,77 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>br.net.fabiozumbi12.RankUpper</groupId>
+		<artifactId>RankUpper</artifactId>
+		<version>3.0.2</version>
+	</parent>
+	<artifactId>RankUpper-7.0-8.0</artifactId>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.spongepowered</groupId>
+			<artifactId>spongeapi</artifactId>
+			<version>${spongeVersion}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.spongepowered</groupId>
+			<artifactId>spongeapi</artifactId>
+			<version>${spongeVersion}</version>
+			<classifier>javadoc</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>br.net.fabiozumbi12.RankUpper</groupId>
+			<artifactId>RankUpper-5.0-6.0</artifactId>
+			<version>LATEST</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+	<properties>
+		<spongeVersion>8.0.0-SNAPSHOT</spongeVersion>
+	</properties>
+
+	<build>
+		<finalName>DONT-DOWNLOAD-SpongeAPI78-Reference</finalName>
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.4.3</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<artifactSet>
+								<includes>
+									<include>br.net.fabiozumbi12.RankUpper:RankUpper-5.0-6.0</include>
+								</includes>
+							</artifactSet>
+							<filters>
+								<filter>
+									<artifact>br.net.fabiozumbi12.RankUpper:*</artifact>
+									<includes>
+										<include>**</include>
+									</includes>
+								</filter>
+							</filters>
+							<outputFile>${project.basedir}/target/RankUpper-${project.version}-b${BUILD_NUMBER}-Universal.jar</outputFile>
+						</configuration>
+					</execution>
+				</executions>
+				<configuration>
+					<createDependencyReducedPom>false</createDependencyReducedPom>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+
+</project>
