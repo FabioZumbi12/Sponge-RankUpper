@@ -379,7 +379,7 @@ public class RUConfig{
 			}					
 		}
 
-		if (moneyNeeded != 0){
+		if (moneyNeeded != 0 && RankUpper.get().getEconomy() != null){
 			UniqueAccount acc = RankUpper.get().getEconomy().getOrCreateAccount(p.getUniqueId()).get();
 			if (acc.getBalance(RankUpper.get().getEconomy().getDefaultCurrency()).intValue() < moneyNeeded){
 				return false;

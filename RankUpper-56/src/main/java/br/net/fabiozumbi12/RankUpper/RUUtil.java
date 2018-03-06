@@ -57,11 +57,7 @@ public class RUUtil {
 	
 	public static Map<String, Integer> sort(Map<String, Integer> unsortMap) {
 		List<Map.Entry<String, Integer>> list =	new LinkedList<Map.Entry<String, Integer>>(unsortMap.entrySet());
-		Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
-			public int compare(Map.Entry<String, Integer> o2, Map.Entry<String, Integer> o1) {
-				return (o1.getValue()).compareTo(o2.getValue());
-			}
-		});
+		Collections.sort(list, (o2, o1) -> (o1.getValue()).compareTo(o2.getValue()));
 		Map<String, Integer> sortedMap = new LinkedHashMap<String, Integer>();
 		for (Iterator<Map.Entry<String, Integer>> it = list.iterator(); it.hasNext();) {
 			Map.Entry<String, Integer> entry = it.next();

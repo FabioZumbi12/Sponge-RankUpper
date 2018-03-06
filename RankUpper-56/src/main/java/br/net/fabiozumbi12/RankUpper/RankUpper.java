@@ -165,12 +165,10 @@ public class RankUpper {
 	private void PlayerCounterHandler() {
 		logger.info("Updating player times every "+ cfgs.getInt("update-player-time-minutes") + " minute(s)!");  
 		
-		Sponge.getScheduler().createSyncExecutor(this).scheduleWithFixedDelay(new Runnable() {  
-			public void run() {
-				logger.debug("Updating played times to players!");
-				cfgs.AddPlayerTimes();					
-			} 
-		},cfgs.getInt("update-player-time-minutes"), cfgs.getInt("update-player-time-minutes"), TimeUnit.MINUTES);	
+		Sponge.getScheduler().createSyncExecutor(this).scheduleWithFixedDelay(() -> {
+            logger.debug("Updating played times to players!");
+            cfgs.AddPlayerTimes();
+        },cfgs.getInt("update-player-time-minutes"), cfgs.getInt("update-player-time-minutes"), TimeUnit.MINUTES);
 	}	
 	
 	@Listener
@@ -183,12 +181,10 @@ public class RankUpper {
 	private void AutoSaveHandler() {
 		logger.info("Saving database every "+ cfgs.getInt("flat-file-save-interval") + " minute(s)!");  
 		
-		Sponge.getScheduler().createSyncExecutor(this).scheduleWithFixedDelay(new Runnable() {  
-			public void run() {
-				logger.debug("Saving Database File!");
-				cfgs.savePlayersStats();	
-				} 
-			},cfgs.getInt("flat-file-save-interval"), cfgs.getInt("flat-file-save-interval"), TimeUnit.MINUTES);	
+		Sponge.getScheduler().createSyncExecutor(this).scheduleWithFixedDelay(() -> {
+            logger.debug("Saving Database File!");
+            cfgs.savePlayersStats();
+            },cfgs.getInt("flat-file-save-interval"), cfgs.getInt("flat-file-save-interval"), TimeUnit.MINUTES);
 	}
 
 }
