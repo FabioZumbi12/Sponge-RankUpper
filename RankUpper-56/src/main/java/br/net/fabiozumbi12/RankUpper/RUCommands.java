@@ -319,7 +319,7 @@ public class RUCommands {
 			}
 		}
 
-		if (moneyNeeded != 0){
+		if (moneyNeeded != 0 && RankUpper.get().getEconomy() != null){
 			UniqueAccount acc = RankUpper.get().getEconomy().getOrCreateAccount(playerToCheck.getUniqueId()).get();
 			int usermoney = acc.getBalance(RankUpper.get().getEconomy().getDefaultCurrency()).intValue();
 			if (usermoney >= moneyNeeded){
