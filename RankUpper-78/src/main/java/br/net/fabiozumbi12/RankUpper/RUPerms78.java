@@ -26,6 +26,23 @@ public class RUPerms78 implements RUPerms {
 		}
 		return groups;
 	}
+
+	public List<Subject> getPlayerGroups(User player){
+        List<Subject> subs = new ArrayList<>();
+        try {
+            for (SubjectReference sub:player.getParents()){
+                if (sub.getCollectionIdentifier().equals(getGroups().getIdentifier()) && (sub.getSubjectIdentifier() != null)){
+                    Subject subj = sub.resolve().get();
+                    if (!RankUpper.get().getConfig().getStringList("exclude-groups").contains(subj.getIdentifier())){
+                        subs.add(subj);
+                    }
+                }
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return subs;
+    }
 	
 	public Subject getHighestGroup(User player){
 		HashMap<Integer, Subject> subs = new HashMap<Integer, Subject>();
@@ -47,7 +64,7 @@ public class RUPerms78 implements RUPerms {
 		return null;
 	}
 	
-	public SubjectCollection getGroups(){
+	private SubjectCollection getGroups(){
 		return permissionService.getGroupSubjects();		
 	}
 }

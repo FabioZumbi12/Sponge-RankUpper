@@ -345,12 +345,23 @@ public class RUConfig{
 	}
 	
 	boolean checkRankup(User p){
-		Subject subG = RankUpper.get().getPerms().getHighestGroup(p);		
+		Subject subG = RankUpper.get().getPerms().getHighestGroup(p);
+
+        String pgroup = null;
 		if(subG == null){
-			return false;
-		}
-		
-		String pgroup = subG.getIdentifier();		
+            List<Subject> pgroups = RankUpper.get().getPerms().getPlayerGroups(p);
+            for (Subject sub:pgroups){
+                if (config.getNode("ranked-groups",sub.getIdentifier(),"next-group") != null){
+                    pgroup = sub.getIdentifier();
+                    RankUpper.get().getLogger().debug("Ranked Player Group (not primary) is: "+pgroup);
+                    break;
+                }
+            }
+            if (pgroup == null) return false;
+		} else {
+            pgroup = subG.getIdentifier();
+        }
+
 		RankUpper.get().getLogger().debug("Highest Group is: "+pgroup);
 		
 		String ngroup = config.getNode("ranked-groups",pgroup,"next-group").getString();

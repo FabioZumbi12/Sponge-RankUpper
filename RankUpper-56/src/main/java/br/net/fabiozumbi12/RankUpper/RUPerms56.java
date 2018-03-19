@@ -19,18 +19,28 @@ public class RUPerms56 implements RUPerms {
 	
 	public List<String> getAllGroups(){
 		List<String> groups = new ArrayList<String>();
-		for (Subject group:getGroups().getAllSubjects()){ 
+		for (Subject group:getGroups().getAllSubjects()){
 			groups.add(group.getIdentifier());
 		}
 		return groups;
+	}
+
+	public List<Subject> getPlayerGroups(User player){
+		List<Subject> subs = new ArrayList<>();
+		for (Subject sub:player.getParents()){
+			if (sub.getContainingCollection().equals(getGroups()) &&
+					(sub.getIdentifier() != null) && !RankUpper.get().getConfig().getStringList("exclude-groups").contains(sub.getIdentifier())){
+				subs.add(sub);
+			}
+		}
+		return subs;
 	}
 	
 	public Subject getHighestGroup(User player){
 		HashMap<Integer, Subject> subs = new HashMap<Integer, Subject>();		
 		for (Subject sub:player.getParents()){
 			if (sub.getContainingCollection().equals(getGroups()) && 
-					(sub.getIdentifier() != null) && 
-					!RankUpper.get().getConfig().getStringList("exclude-groups").contains(sub.getIdentifier())){
+					(sub.getIdentifier() != null) && !RankUpper.get().getConfig().getStringList("exclude-groups").contains(sub.getIdentifier())){
 				subs.put(sub.getParents().size(), sub);				
 			}			
 		}
@@ -40,7 +50,7 @@ public class RUPerms56 implements RUPerms {
 		return null;
 	}
 	
-	public SubjectCollection getGroups(){
+	private SubjectCollection getGroups(){
 		return permissionService.getGroupSubjects();		
 	}
 }

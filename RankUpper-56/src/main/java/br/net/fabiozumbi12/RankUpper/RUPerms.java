@@ -7,9 +7,9 @@ import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.SubjectCollection;
 
 public interface RUPerms {
-	public List<String> getAllGroups();
+	List<String> getAllGroups();
 	
-	public Subject getHighestGroup(User player);
-	
-	public SubjectCollection getGroups();
+	Subject getHighestGroup(User player);
+
+	List<Subject> getPlayerGroups(User player);
 }
