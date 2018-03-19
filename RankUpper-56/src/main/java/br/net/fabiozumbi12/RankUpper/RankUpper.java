@@ -103,12 +103,13 @@ public class RankUpper {
             lang = new RULang();
             
             logger.info("Init permissions module...");
-            String v = game.getPlatform().getContainer(Component.API).getVersion().get();
+            String v = game.getPlatform().getContainer(Component.API).getVersion().isPresent() ? game.getPlatform().getContainer(Component.API).getVersion().get() : "8";
+
             if (v.startsWith("5") || v.startsWith("6")){
-            	perms = (RUPerms)Class.forName("br.net.fabiozumbi12.RankUpper.RUPerms56").newInstance();
+                perms = (RUPerms)Class.forName("br.net.fabiozumbi12.RankUpper.RUPerms56").getConstructor().newInstance();
             }
             if (v.startsWith("7") || v.startsWith("8")){
-            	perms = (RUPerms)Class.forName("br.net.fabiozumbi12.RankUpper.RUPerms78").newInstance();
+                perms = (RUPerms)Class.forName("br.net.fabiozumbi12.RankUpper.RUPerms78").getConstructor().newInstance();
             }
 
             logger.info("Init commands module...");
