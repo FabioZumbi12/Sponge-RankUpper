@@ -19,7 +19,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 public class RUUtil {
 	
 	public static String DateNow(){
-    	DateFormat df = new SimpleDateFormat(RankUpper.get().getConfig().getString("date-format"));
+    	DateFormat df = new SimpleDateFormat(RankUpper.get().getConfig().root().date_format);
         Date today = Calendar.getInstance().getTime(); 
         String now = df.format(today);
 		return now;    	

@@ -33,7 +33,7 @@ public class RUPerms78 implements RUPerms {
             for (SubjectReference sub:player.getParents()){
                 if (sub.getCollectionIdentifier().equals(getGroups().getIdentifier()) && (sub.getSubjectIdentifier() != null)){
                     Subject subj = sub.resolve().get();
-                    if (!RankUpper.get().getConfig().getStringList("exclude-groups").contains(subj.getIdentifier())){
+                    if (!RankUpper.get().getConfig().root().exclude_groups.contains(subj.getIdentifier())){
                         subs.add(subj);
                     }
                 }
@@ -50,7 +50,7 @@ public class RUPerms78 implements RUPerms {
 			for (SubjectReference sub:player.getParents()){
 				if (sub.getCollectionIdentifier().equals(getGroups().getIdentifier()) && (sub.getSubjectIdentifier() != null)){
 					Subject subj = sub.resolve().get();
-					if (!RankUpper.get().getConfig().getStringList("exclude-groups").contains(subj.getIdentifier())){
+					if (!RankUpper.get().getConfig().root().exclude_groups.contains(subj.getIdentifier())){
 						subs.put(subj.getParents().size(), subj);	
 					}								
 				}			

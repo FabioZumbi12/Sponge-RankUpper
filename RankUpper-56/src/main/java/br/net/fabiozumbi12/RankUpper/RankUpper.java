@@ -1,13 +1,13 @@
 package br.net.fabiozumbi12.RankUpper;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
+import br.net.fabiozumbi12.RankUpper.config.RUConfig;
 
+import ninja.leaping.configurate.objectmapping.GuiceObjectMapperFactory;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Platform.Component;
 import org.spongepowered.api.Sponge;
@@ -70,37 +70,35 @@ public class RankUpper {
 	public RULang getLang(){
 		return this.lang;
 	}
-	
-	@Inject
-	@ConfigDir(sharedRoot = false)
-	private Path configDir;
-	public Path getConfigDir(){
-		return this.configDir;
-	}
 
 	@Inject
 	@DefaultConfig(sharedRoot = false)
-	private File defConfig;
-	
-	@Inject
-	@DefaultConfig(sharedRoot = true)
-	private ConfigurationLoader<CommentedConfigurationNode> configManager;	
-	public ConfigurationLoader<CommentedConfigurationNode> getCfManager(){
-		return configManager;
+	private File defaultConfig;
+	public File getDefConfig(){
+		return this.defaultConfig;
 	}
-	
+
+	@Inject
+	@ConfigDir(sharedRoot = false)
+	private Path configDir;
+	public File getConfigDir(){
+		return this.configDir.toFile();
+	}
+
+	@Inject
+	public GuiceObjectMapperFactory factory;
+
 	@Listener
 	public void onServerStart(GameStartedServerEvent event) {
         try {
         	rankupper = this;
-        	logger = new RULogger();
+			this.logger = new RULogger();
         	
         	logger.info("Init config module...");
-        	configManager = HoconConfigurationLoader.builder().setFile(defConfig).build();	
-            cfgs = new RUConfig(this, configDir, defConfig);
+            this.cfgs = new RUConfig(this.factory);
             
             logger.info("Init lang module...");
-            lang = new RULang();
+			this.lang = new RULang();
             
             logger.info("Init permissions module...");
             String v = game.getPlatform().getContainer(Component.API).getVersion().isPresent() ? game.getPlatform().getContainer(Component.API).getVersion().get() : "8";
@@ -131,12 +129,12 @@ public class RankUpper {
 	}
 	
 	private void registerNucleus(){
-		if(cfgs.getBool("afk-support")) {
+		if(cfgs.root().afk_support) {
 			if (Sponge.getPluginManager().getPlugin("nucleus").isPresent()) {
 				logger.info("Nucleus found. AFK support enabled.");
 				RUAFK.init();
 			} else {
-				cfgs.setConfig(false, "afk-support");
+				cfgs.root().afk_support = false;
 				logger.info("Nucleus is not installed. AFK support has been disabled in your config.");
 			}
 		}
@@ -156,7 +154,12 @@ public class RankUpper {
 			task.cancel();
 		}
 		cfgs.savePlayersStats();
-		cfgs = new RUConfig(this, configDir, defConfig);
+		cfgs.closeConn();
+		try {
+			cfgs = new RUConfig(this.factory);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		lang = new RULang();
 		PlayerCounterHandler();
 		AutoSaveHandler();
@@ -164,12 +167,12 @@ public class RankUpper {
 	}
 	
 	private void PlayerCounterHandler() {
-		logger.info("Updating player times every "+ cfgs.getInt("update-player-time-minutes") + " minute(s)!");  
+		logger.info("Updating player times every "+ cfgs.root().update_player_time_minutes + " minute(s)!");
 		
 		Sponge.getScheduler().createSyncExecutor(this).scheduleWithFixedDelay(() -> {
             logger.debug("Updating played times to players!");
             cfgs.AddPlayerTimes();
-        },cfgs.getInt("update-player-time-minutes"), cfgs.getInt("update-player-time-minutes"), TimeUnit.MINUTES);
+        },cfgs.root().update_player_time_minutes, cfgs.root().update_player_time_minutes, TimeUnit.MINUTES);
 	}	
 	
 	@Listener
@@ -180,41 +183,11 @@ public class RankUpper {
 	}
 	
 	private void AutoSaveHandler() {
-		logger.info("Saving database every "+ cfgs.getInt("flat-file-save-interval") + " minute(s)!");  
+		logger.info("Saving database every "+ cfgs.root().database_save_interval + " minute(s)!");
 		
 		Sponge.getScheduler().createSyncExecutor(this).scheduleWithFixedDelay(() -> {
             logger.debug("Saving Database File!");
             cfgs.savePlayersStats();
-            },cfgs.getInt("flat-file-save-interval"), cfgs.getInt("flat-file-save-interval"), TimeUnit.MINUTES);
+            },cfgs.root().database_save_interval, cfgs.root().database_save_interval, TimeUnit.MINUTES);
 	}
-
-}
-
-class RULogger{	
-	
-	public void success(String s) {
-		Sponge.getServer().getConsole().sendMessage(RUUtil.toText("RankUpper: [&a&l"+s+"&r]"));
-    }
-	
-    public void info(String s) {
-    	Sponge.getServer().getConsole().sendMessage(RUUtil.toText("RankUpper: ["+s+"]"));
-    }
-    
-    public void warning(String s) {
-    	Sponge.getServer().getConsole().sendMessage(RUUtil.toText("RankUpper: [&6"+s+"&r]"));
-    }
-    
-    public void severe(String s) {
-    	Sponge.getServer().getConsole().sendMessage(RUUtil.toText("RankUpper: [&c&l"+s+"&r]"));
-    }
-    
-    public void log(String s) {
-    	Sponge.getServer().getConsole().sendMessage(RUUtil.toText("RankUpper: ["+s+"]"));
-    }
-    
-    public void debug(String s) {
-        if (RankUpper.get().getConfig().getBool("debug-messages")) {
-        	Sponge.getServer().getConsole().sendMessage(RUUtil.toText("RankUpper: [&b"+s+"&r]"));
-        }  
-    }
 }

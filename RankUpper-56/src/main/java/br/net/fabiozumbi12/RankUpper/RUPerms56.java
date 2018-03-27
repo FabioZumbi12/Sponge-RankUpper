@@ -29,7 +29,7 @@ public class RUPerms56 implements RUPerms {
 		List<Subject> subs = new ArrayList<>();
 		for (Subject sub:player.getParents()){
 			if (sub.getContainingCollection().equals(getGroups()) &&
-					(sub.getIdentifier() != null) && !RankUpper.get().getConfig().getStringList("exclude-groups").contains(sub.getIdentifier())){
+					(sub.getIdentifier() != null) && !RankUpper.get().getConfig().root().exclude_groups.contains(sub.getIdentifier())){
 				subs.add(sub);
 			}
 		}
@@ -40,7 +40,7 @@ public class RUPerms56 implements RUPerms {
 		HashMap<Integer, Subject> subs = new HashMap<Integer, Subject>();		
 		for (Subject sub:player.getParents()){
 			if (sub.getContainingCollection().equals(getGroups()) && 
-					(sub.getIdentifier() != null) && !RankUpper.get().getConfig().getStringList("exclude-groups").contains(sub.getIdentifier())){
+					(sub.getIdentifier() != null) && !RankUpper.get().getConfig().root().exclude_groups.contains(sub.getIdentifier())){
 				subs.put(sub.getParents().size(), sub);				
 			}			
 		}

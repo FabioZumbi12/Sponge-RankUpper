@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import br.net.fabiozumbi12.RankUpper.config.RankedGroupsCategory;
+import br.net.fabiozumbi12.RankUpper.config.StatsCategory;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandCallable;
@@ -20,8 +21,6 @@ import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.statistic.Statistic;
 import org.spongepowered.api.text.Text;
-
-import com.google.common.reflect.TypeToken;
 
 public class RUCommands {
 
@@ -140,8 +139,8 @@ public class RUCommands {
 						RankUpper.get().getLang().sendMessage(src, "Player Info:");
 						src.sendMessage(RUUtil.toText("&3- Nick: &b" + pdb.get("PlayerName")));
 						src.sendMessage(RUUtil.toText("&3- Joind Date: &b" + pdb.get("JoinDate")));
-						src.sendMessage(RUUtil.toText("&3- Last Visit: &b" + pdb.get("LastVisist")));
-						src.sendMessage(RUUtil.toText("&3- Time Played: &b" + RUUtil.timeDescript(Integer.parseInt((String)pdb.get("TimePlayed")))));
+						src.sendMessage(RUUtil.toText("&3- Last Visit: &b" + pdb.get("LastVisit")));
+						src.sendMessage(RUUtil.toText("&3- Time Played: &b" + RUUtil.timeDescript((int)pdb.get("TimePlayed"))));
 						return CommandResult.success();	
 					} else {
 						throw new CommandException(RUUtil.toText(RankUpper.get().getLang().get("commands.unknownplayer").replace("{player}", args.<User>getOne("player").get().getName())), true);
@@ -200,23 +199,23 @@ public class RUCommands {
 				.description(Text.of("List all groups from on config."))
 				.permission("rankupper.list-groups")
 			    .executor((src, args) -> { {	
-			    	CommentedConfigurationNode node = RankUpper.get().getConfig().configs().getNode("ranked-groups");
+			    	Map<String, RankedGroupsCategory> groups = RankUpper.get().getConfig().root().ranked_groups;
 			    	src.sendMessage(RUUtil.toText("&b--------------- RankUpper Groups ---------------"));
-			    	node.getChildrenMap().keySet().stream().forEachOrdered((key)->{
-			    		src.sendMessage(RUUtil.toText("&7Group: &a"+key.toString()));
+					groups.keySet().stream().forEachOrdered((key)->{
+			    		src.sendMessage(RUUtil.toText("&7Group: &a"+key));
 			    		try {
 			    			src.sendMessage(RUUtil.toText("&7Commands: "));
-			    			node.getNode(key,"execute-commands").getList(TypeToken.of(String.class)).stream().forEach((cmd)->{
+							groups.get(key).execute_commands.forEach((cmd)->{
 								src.sendMessage(RUUtil.toText("&a-- &b"+cmd));
 							});
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-			    		src.sendMessage(RUUtil.toText("&7Minutes: &a"+node.getNode(key,"minutes-needed").getInt(0)+" ("+RUUtil.timeDescript(node.getNode(key,"minutes-needed").getInt(0))+")"));
-			    		src.sendMessage(RUUtil.toText("&7Levels: &a"+node.getNode(key,"levels-needed").getInt(0)));			    		
-			    		src.sendMessage(RUUtil.toText("&7Money: &a"+node.getNode(key,"money-needed").getInt(0)));			    		
-			    		src.sendMessage(RUUtil.toText("&7Next Group: &a"+node.getNode(key,"next-group").getString("&cNone")));
-			    		src.sendMessage(RUUtil.toText("&7Message: &a"+node.getNode(key,"message-broadcast").getString("")));
+			    		src.sendMessage(RUUtil.toText("&7Minutes: &a"+groups.get(key).minutes_needed+" ("+RUUtil.timeDescript(groups.get(key).minutes_needed)+")"));
+			    		src.sendMessage(RUUtil.toText("&7Levels: &a"+groups.get(key).levels_needed));
+			    		src.sendMessage(RUUtil.toText("&7Money: &a"+groups.get(key).money_needed));
+			    		src.sendMessage(RUUtil.toText("&7Next Group: &a"+groups.get(key).next_group));
+			    		src.sendMessage(RUUtil.toText("&7Message: &a"+groups.get(key).message_broadcast));
 			    		src.sendMessage(RUUtil.toText("&b---------------------------------------------"));
 			    	}); 
 			    	return CommandResult.success();	
@@ -253,10 +252,10 @@ public class RUCommands {
 
 	private static void ExecuteTopCount(CommandSource p) {
 		HashMap<String, Integer> stats = new HashMap<String, Integer>();
-		for (Object uuid:RankUpper.get().getConfig().stats().getChildrenMap().keySet()){
-			String play = RankUpper.get().getConfig().stats().getNode(uuid.toString(),"PlayerName").getString();
-			if (RankUpper.get().getConfig().getPlayerTime(uuid.toString()) > 0){
-				stats.put(play, RankUpper.get().getConfig().getPlayerTime(uuid.toString()));
+		for (StatsCategory.PlayerInfoCategory key:RankUpper.get().getConfig().stats().players.values()){
+			String play = key.PlayerName;
+			if (key.TimePlayed > 0){
+				stats.put(play, key.TimePlayed);
 			}
 		}				
 		int top10 = 0; 
@@ -272,7 +271,6 @@ public class RUCommands {
 		    if (top10 == 10){color = "&c";}
 		    p.sendMessage(RUUtil.toText("&3" + top10 + ". "+color+plr+": &a" + RUUtil.timeDescript(time)));
 		    if (top10 == 10){
-		    	top10 = 0;
 			    break;
 		    }
 	    }		
@@ -298,7 +296,7 @@ public class RUCommands {
 		} else {
 			RankUpper.get().getLang().sendMessage(sender, RankUpper.get().getLang().get("commands.check.youplayed").replace("{time}", RUUtil.timeDescript(time)).replace("{group}", dispName));
 		}
-        String ngroup = RankUpper.get().getConfig().getString("ranked-groups",pgroup,"next-group");
+        String ngroup = RankUpper.get().getConfig().root().ranked_groups.get(pgroup) != null ? RankUpper.get().getConfig().root().ranked_groups.get(pgroup).next_group : null;
 				
 
 		if (ngroup == null || ngroup.isEmpty() || !RankUpper.get().getPerms().getAllGroups().contains(ngroup)){
@@ -307,9 +305,9 @@ public class RUCommands {
 		
 		sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("commands.nextgroup").replace("{group}", ngroup)));
 		
-		int minutesNeeded = RankUpper.get().getConfig().getInt("ranked-groups",pgroup,"minutes-needed");
-		int moneyNeeded = RankUpper.get().getConfig().getInt("ranked-groups",pgroup,"money-needed");
-		int levelNeeded = RankUpper.get().getConfig().getInt("ranked-groups",pgroup,"levels-needed");		
+		int minutesNeeded = RankUpper.get().getConfig().root().ranked_groups.get(pgroup).minutes_needed;
+		int moneyNeeded = RankUpper.get().getConfig().root().ranked_groups.get(pgroup).money_needed;
+		int levelNeeded = RankUpper.get().getConfig().root().ranked_groups.get(pgroup).levels_needed;
 				
 		if (minutesNeeded != 0){
 			if (RankUpper.get().getConfig().getPlayerTime(RankUpper.get().getConfig().getPlayerKey(playerToCheck)) >= minutesNeeded){
@@ -343,18 +341,16 @@ public class RUCommands {
 		}		
 
 		//check for statistics
-		for (Entry<Object, ? extends CommentedConfigurationNode> key:RankUpper.get().getConfig().configs().getNode("ranked-groups",pgroup).getChildrenMap().entrySet()){
-			if (Sponge.getRegistry().getType(Statistic.class, key.toString()).isPresent()){
-				Statistic stat = Sponge.getRegistry().getType(Statistic.class, key.toString()).get();
-				long needed = key.getValue().getLong();
-				long actual =  playerToCheck.getStatisticData().get(stat).get();
-				if (playerToCheck.getStatisticData().get(stat).isPresent()){
-					if (actual >= needed){
-						sender.sendMessage(RUUtil.toText(stat.getName() + ": &a"+actual+"/"+needed + " - " + RankUpper.get().getLang().get("config.ok")));
-					} else {
-						sender.sendMessage(RUUtil.toText(stat.getName() + ": &c"+actual+"/"+needed));
-					}
-				}										
+		for (Entry<String, Long> key:RankUpper.get().getConfig().root().ranked_groups.get(pgroup).minecraft_statistic.entrySet()){
+			if (Sponge.getRegistry().getType(Statistic.class, key.getKey()).isPresent()){
+				Statistic stat = Sponge.getRegistry().getType(Statistic.class, key.getKey()).get();
+				long needed = key.getValue();
+				long actual = playerToCheck.getStatisticData().get(stat).isPresent() ? playerToCheck.getStatisticData().get(stat).get() : 0;
+				if (actual >= needed){
+					sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.statistics").replace("{statistic}", stat.getName()) + ": &a"+actual+"/"+needed + " - " + RankUpper.get().getLang().get("config.ok")));
+				} else {
+					sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.statistics").replace("{statistic}", stat.getName()) + ": &c"+actual+"/"+needed));
+				}
 			}
 		}
 	}

@@ -1,14 +1,8 @@
 package br.net.fabiozumbi12.RankUpper;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import org.spongepowered.api.Sponge;
@@ -21,10 +15,7 @@ public class RULang {
 	static Properties BaseLang = new Properties();
 	static Properties Lang = new Properties();
     static String pathLang;
-    static File langFile;
     static String resLang;
-    static Path defaultDir;
-    static RankUpper pl;
 	
 	public SortedSet<String> helpStrings(){
 		SortedSet<String> values = new TreeSet<String>();
@@ -37,27 +28,27 @@ public class RULang {
 	}
 	
 	public RULang() {
-		pathLang = RankUpper.get().getConfigDir() + File.separator + "lang" + RankUpper.get().getConfig().getString("language") + ".properties"; 		
-		resLang = "lang" + RankUpper.get().getConfig().getString("language") + ".properties";
-			
-		langFile = new File(pathLang);
-		if (!langFile.exists()) {
-			if (RankUpper.get().instance().getAsset(resLang).isPresent()){
+		resLang = "lang" + RankUpper.get().getConfig().root().language + ".properties";
+		pathLang = RankUpper.get().getConfigDir() + File.separator + resLang;
+
+		File lang = new File(pathLang);
+		if (!lang.exists()) {
+			if (!RankUpper.get().instance().getAsset(resLang).isPresent()){
 				resLang = "langEN-US.properties";
-				pathLang = RankUpper.get().getConfigDir() + File.separator + "langEN-US.properties";
+				pathLang = RankUpper.get().getConfigDir() + File.separator + resLang;
 			}
 			
 			try {
-				RankUpper.get().instance().getAsset(resLang).get().copyToDirectory(RankUpper.get().getConfigDir());
+				RankUpper.get().instance().getAsset(resLang).get().copyToDirectory(RankUpper.get().getConfigDir().toPath());
 			}  catch (IOException e) {
 				e.printStackTrace();
 			}
-			RankUpper.get().getLogger().info("Created config file: " + pathLang);
+			RankUpper.get().getLogger().info("Created lang file: " + pathLang);
         }
 		
 		loadLang();
 		loadBaseLang();
-		RankUpper.get().getLogger().info("Language file loaded - Using: "+ RankUpper.get().getConfig().getString("language"));	
+		RankUpper.get().getLogger().info("Language file loaded - Using: "+ RankUpper.get().getConfig().root().language);
 	}
 	
 	private void loadBaseLang(){
@@ -72,6 +63,14 @@ public class RULang {
 	
 	private void loadLang() {
 		Lang.clear();
+		try {
+			FileInputStream fileInput = new FileInputStream(pathLang);
+			Reader reader = new InputStreamReader(fileInput, "UTF-8");
+			Lang.load(reader);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		if (Lang.get("_lang.version") != null){
 			int langv = Integer.parseInt(Lang.get("_lang.version").toString().replace(".", ""));
 			int rpv = Integer.parseInt(RankUpper.get().instance().getVersion().get().replace(".", ""));
@@ -84,19 +83,19 @@ public class RULang {
 	}
 	
 	private void updateLang(){
-	    for (Object linha : BaseLang.keySet()) {	    	
-	      if (!Lang.containsKey(linha)) {
-	    	  Lang.put(linha, BaseLang.get(linha));
-	      }
-	    }
+		for (Map.Entry<Object, Object> linha : BaseLang.entrySet()) {
+			if (!Lang.containsKey(linha.getKey())) {
+				Lang.put(linha.getKey(), linha.getValue());
+			}
+		}
 		if (!Lang.containsKey("_lang.version")){
 			Lang.put("_lang.version", RankUpper.get().instance().getVersion().get());
-    	}
-	      try {
+		}
+		try {
 			Lang.store(new OutputStreamWriter(new FileOutputStream(pathLang), "UTF-8"), null);
 		} catch (IOException e) {
 			e.printStackTrace();
-		}	    
+		}
 	  }
 	
 	public String get(String key){		
@@ -135,13 +134,11 @@ public class RULang {
 		}		
 		
 		DelayedMessage.put(p,key);
-		Sponge.getScheduler().createSyncExecutor(pl).schedule(new Runnable() { 
-			public void run() {
-				if (DelayedMessage.containsKey(p)){
-					DelayedMessage.remove(p);
-				}
-				} 
-			},1, TimeUnit.SECONDS);
+		Sponge.getScheduler().createSyncExecutor(RankUpper.get()).schedule(() -> {
+            if (DelayedMessage.containsKey(p)){
+                DelayedMessage.remove(p);
+            }
+            },1, TimeUnit.SECONDS);
 	}
 	
 	public String translBool(String bool){		
