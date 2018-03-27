@@ -36,7 +36,13 @@ public class RankedGroupsCategory {
     @Setting(value = "minecraft-statistics", comment="Use some Minecraft Statistics to track for rankup.\n" +
             "This option will only accept LONG types for statistics.\n" +
             "See all statistics names here: https://jd.spongepowered.org/7.0.0/org/spongepowered/api/statistic/Statistics.html")
-    public Map<String, Long> minecraft_statistic = new HashMap<>();
+    public Map<String, Long> minecraft_statistic = createMap();
+    private Map<String, Long> createMap()
+    {
+        Map<String,Long> myMap = new HashMap<>();
+        myMap.put("MOB_KILLS", 100L);
+        return myMap;
+    }
 
     /**
      * @param execute_commands

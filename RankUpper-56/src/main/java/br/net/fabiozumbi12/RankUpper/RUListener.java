@@ -11,8 +11,8 @@ public class RUListener {
     	User p = e.getTargetUser();
     	
     	RankUpper.get().getLogger().debug("Player Join Event!");
-    	if (RankUpper.get().getConfig().getPlayerKey(p) == null){
-    		RankUpper.get().getConfig().AddPlayer(p);
+    	if (RankUpper.get().getStats().getPlayerKey(p) == null){
+    		RankUpper.get().getStats().AddPlayer(p);
     	}    	
 	}	
 }

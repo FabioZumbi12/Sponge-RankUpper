@@ -3,8 +3,11 @@ package br.net.fabiozumbi12.RankUpper;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
+import br.net.fabiozumbi12.RankUpper.config.PlayerStatsDB;
 import br.net.fabiozumbi12.RankUpper.config.RUConfig;
 
 import ninja.leaping.configurate.objectmapping.GuiceObjectMapperFactory;
@@ -25,6 +28,7 @@ import org.spongepowered.api.service.economy.EconomyService;
 import br.net.fabiozumbi12.RankUpper.config.VersionData;
 
 import com.google.inject.Inject;
+import org.spongepowered.api.service.sql.SqlService;
 
 @Plugin(id="rankupper", 
 name="RankUpper", 
@@ -85,6 +89,22 @@ public class RankUpper {
 		return this.configDir.toFile();
 	}
 
+	private PlayerStatsDB stats;
+	public PlayerStatsDB getStats() {
+		return this.stats;
+	}
+
+	private String dbPath;
+	private SqlService sql;
+	public Connection getConnection(){
+		try {
+			return sql.getDataSource(dbPath).getConnection();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	@Inject
 	public GuiceObjectMapperFactory factory;
 
@@ -93,10 +113,15 @@ public class RankUpper {
         try {
         	rankupper = this;
 			this.logger = new RULogger();
-        	
-        	logger.info("Init config module...");
-            this.cfgs = new RUConfig(this.factory);
-            
+
+			logger.info("Init config module...");
+			this.cfgs = new RUConfig(this.factory);
+
+        	logger.info("Init stats module...");
+        	this.dbPath = String.format(this.cfgs.root().database.uri, RankUpper.get().getDefConfig().getParentFile().getAbsolutePath());
+			initConn();
+			this.stats = new PlayerStatsDB();
+
             logger.info("Init lang module...");
 			this.lang = new RULang();
             
@@ -127,7 +152,11 @@ public class RankUpper {
         	logger.severe("Error enabling RankUpper! Plugin Disabled.");
         }
 	}
-	
+
+	private void initConn(){
+		sql = Sponge.getServiceManager().provide(SqlService.class).get();
+	}
+
 	private void registerNucleus(){
 		if(cfgs.root().afk_support) {
 			if (Sponge.getPluginManager().getPlugin("nucleus").isPresent()) {
@@ -142,7 +171,7 @@ public class RankUpper {
 	
 	@Listener
 	public void onStopServer(GameStoppingServerEvent e) {
-		cfgs.savePlayersStats();
+		getStats().savePlayersStats();
         for (Task task:Sponge.getScheduler().getScheduledTasks(this)){
         	task.cancel();
         }
@@ -153,8 +182,7 @@ public class RankUpper {
 		for (Task task:Sponge.getScheduler().getScheduledTasks(this)){
 			task.cancel();
 		}
-		cfgs.savePlayersStats();
-		cfgs.closeConn();
+		getStats().savePlayersStats();
 		try {
 			cfgs = new RUConfig(this.factory);
 		} catch (IOException e) {
@@ -171,7 +199,7 @@ public class RankUpper {
 		
 		Sponge.getScheduler().createSyncExecutor(this).scheduleWithFixedDelay(() -> {
             logger.debug("Updating played times to players!");
-            cfgs.AddPlayerTimes();
+			getStats().AddPlayerTimes();
         },cfgs.root().update_player_time_minutes, cfgs.root().update_player_time_minutes, TimeUnit.MINUTES);
 	}	
 	
@@ -187,7 +215,7 @@ public class RankUpper {
 		
 		Sponge.getScheduler().createSyncExecutor(this).scheduleWithFixedDelay(() -> {
             logger.debug("Saving Database File!");
-            cfgs.savePlayersStats();
+			getStats().savePlayersStats();
             },cfgs.root().database_save_interval, cfgs.root().database_save_interval, TimeUnit.MINUTES);
 	}
 }

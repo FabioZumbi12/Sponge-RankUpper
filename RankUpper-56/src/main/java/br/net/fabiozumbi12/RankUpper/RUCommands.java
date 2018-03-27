@@ -90,7 +90,7 @@ public class RUCommands {
 						GenericArguments.integer(Text.of("minutes")))
 			    .executor((src, args) -> { {
 			    	int time = args.<Integer>getOne("minutes").get();
-			    	RankUpper.get().getConfig().setPlayerTime(RankUpper.get().getConfig().getPlayerKey(args.<User>getOne("player").get()), time);
+			    	RankUpper.get().getStats().setPlayerTime(RankUpper.get().getStats().getPlayerKey(args.<User>getOne("player").get()), time);
 					RankUpper.get().getLang().sendMessage(src, RankUpper.get().getLang().get("commands.setto").replace("{time}", RUUtil.timeDescript(time)).replace("{player}", args.<User>getOne("player").get().getName()));
 			    	return CommandResult.success();	
 			    }})
@@ -104,7 +104,7 @@ public class RUCommands {
 						GenericArguments.integer(Text.of("minutes")))
 			    .executor((src, args) -> { {
 			    	int time = args.<Integer>getOne("minutes").get();
-					RankUpper.get().getLang().sendMessage(src, RankUpper.get().getLang().get("commands.added").replace("{time}", RUUtil.timeDescript(RankUpper.get().getConfig().addPlayerTime(args.<User>getOne("player").get(), time))).replace("{player}", args.<User>getOne("player").get().getName()));
+					RankUpper.get().getLang().sendMessage(src, RankUpper.get().getLang().get("commands.added").replace("{time}", RUUtil.timeDescript(RankUpper.get().getStats().addPlayerTime(args.<User>getOne("player").get(), time))).replace("{player}", args.<User>getOne("player").get().getName()));
 					return CommandResult.success();	
 			    }})
 			    .build();
@@ -134,8 +134,8 @@ public class RUCommands {
 				.arguments(GenericArguments.user(Text.of("player")))
 			    .executor((src, args) -> { {	
 			    	HashMap<String, Object> pdb = new HashMap<String, Object>();
-			    	if (RankUpper.get().getConfig().getPlayerDB(args.<User>getOne("player").get()) != null){
-						pdb = RankUpper.get().getConfig().getPlayerDB(args.<User>getOne("player").get());
+			    	if (RankUpper.get().getStats().getPlayerDB(args.<User>getOne("player").get()) != null){
+						pdb = RankUpper.get().getStats().getPlayerDB(args.<User>getOne("player").get());
 						RankUpper.get().getLang().sendMessage(src, "Player Info:");
 						src.sendMessage(RUUtil.toText("&3- Nick: &b" + pdb.get("PlayerName")));
 						src.sendMessage(RUUtil.toText("&3- Joind Date: &b" + pdb.get("JoinDate")));
@@ -179,22 +179,22 @@ public class RUCommands {
 				.description(Text.of("Force save rankuppper stats."))
 				.permission("rankupper.save-all")
 			    .executor((src, args) -> { {	
-			    	RankUpper.get().getConfig().savePlayersStats();
+			    	RankUpper.get().getStats().savePlayersStats();
 					src.sendMessage(RUUtil.toText("&aPlayer stats Saved!"));
 			    	return CommandResult.success();	
 			    }})
 			    .build();
-		
+
 		CommandSpec loadAll = CommandSpec.builder()
 				.description(Text.of("Force load rankuppper stats."))
 				.permission("rankupper.load-all")
-			    .executor((src, args) -> { {	
-			    	RankUpper.get().getConfig().loadPlayerStats();
+			    .executor((src, args) -> { {
+			    	RankUpper.get().getStats().loadPlayerStats();
 					src.sendMessage(RUUtil.toText("&aPlayer stats Loaded!"));
-			    	return CommandResult.success();	
+			    	return CommandResult.success();
 			    }})
 			    .build();
-		
+
 		CommandSpec listGroups = CommandSpec.builder()
 				.description(Text.of("List all groups from on config."))
 				.permission("rankupper.list-groups")
@@ -252,7 +252,7 @@ public class RUCommands {
 
 	private static void ExecuteTopCount(CommandSource p) {
 		HashMap<String, Integer> stats = new HashMap<String, Integer>();
-		for (StatsCategory.PlayerInfoCategory key:RankUpper.get().getConfig().stats().players.values()){
+		for (StatsCategory.PlayerInfoCategory key:RankUpper.get().getStats().stats().players.values()){
 			String play = key.PlayerName;
 			if (key.TimePlayed > 0){
 				stats.put(play, key.TimePlayed);
@@ -277,7 +277,7 @@ public class RUCommands {
 	}
 
 	private static void SendCheckMessage(CommandSource sender, User playerToCheck) {
-		int time = RankUpper.get().getConfig().getPlayerTime(RankUpper.get().getConfig().getPlayerKey(playerToCheck));
+		int time = RankUpper.get().getStats().getPlayerTime(RankUpper.get().getStats().getPlayerKey(playerToCheck));
 		Subject subG = RankUpper.get().getPerms().getHighestGroup(playerToCheck);
 		String pgroup = "";
 		String dispName = "";
@@ -310,7 +310,7 @@ public class RUCommands {
 		int levelNeeded = RankUpper.get().getConfig().root().ranked_groups.get(pgroup).levels_needed;
 				
 		if (minutesNeeded != 0){
-			if (RankUpper.get().getConfig().getPlayerTime(RankUpper.get().getConfig().getPlayerKey(playerToCheck)) >= minutesNeeded){
+			if (RankUpper.get().getStats().getPlayerTime(RankUpper.get().getStats().getPlayerKey(playerToCheck)) >= minutesNeeded){
 				sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.time") + ": &a" + RUUtil.timeDescript(minutesNeeded) + " - " + RankUpper.get().getLang().get("config.ok")));
 			} else {
 				sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.time") + ": &c" + RUUtil.timeDescript(minutesNeeded)));
