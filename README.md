@@ -8,7 +8,7 @@ Sponge: https://ore.spongepowered.org/FabioZumbi12/RankUpper
 The source is available on GitHub: https://github.com/FabioZumbi12/Sponge-RankUpper
 
 ## Dev Builds:
-Dev build on Jenkins: [![Build Status](http://areaz12server.net.br:8080/buildStatus/icon?job=RankUpper)](http://areaz12server.net.br:8080/job/RankUpper/)
+Dev build on Jenkins: [![Build Status](https://host.areaz12server.net.br:8080/buildStatus/icon?job=RankUpper)](https://host.areaz12server.net.br:8080/job/RankUpper/)
 
 ## Jenkins Builds:
 The jar buils are diferent of jenkins builds.
