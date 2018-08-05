@@ -183,11 +183,7 @@ public class RankUpper {
 			task.cancel();
 		}
 		getStats().savePlayersStats();
-		try {
-			cfgs = new RUConfig(this.factory);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		cfgs = new RUConfig(this.factory);
 		lang = new RULang();
 		PlayerCounterHandler();
 		AutoSaveHandler();

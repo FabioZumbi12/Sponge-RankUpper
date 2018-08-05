@@ -20,7 +20,7 @@ public class RankedGroupsCategory {
     @Setting(value="levels-needed", comment = "Levels(not experience) needed to promote.")
     public int levels_needed = 0;
 
-    @Setting(value="message-broadcast", comment = "Broadcast the promote messsage to all players.\n" +
+    @Setting(value="message-broadcast", comment = "Broadcast the promote message to all players.\n" +
             "Available placeholders: {player}, {time}, {newgroup}")
     public String message_broadcast = "";
 
@@ -30,7 +30,7 @@ public class RankedGroupsCategory {
     @Setting(value="money-needed", comment = "Money needed. Do not requires additional plugin.")
     public int money_needed = 0;
 
-    @Setting(value="next-group", comment = "Exact name of group to promote player on match the requiriments.")
+    @Setting(value="next-group", comment = "Exact name of group to promote player on match the requirements.")
     public String next_group = "";
 
     @Setting(value = "minecraft-statistics", comment="Use some Minecraft Statistics to track for rankup.\n" +
@@ -44,15 +44,7 @@ public class RankedGroupsCategory {
         return myMap;
     }
 
-    /**
-     * @param execute_commands
-     * @param levels_needed
-     * @param message_broadcast
-     * @param minutes_needed
-     * @param money_needed
-     * @param next_group
-     */
-    public RankedGroupsCategory(List<String> execute_commands, int levels_needed, String message_broadcast, int minutes_needed, int money_needed, String next_group){
+    RankedGroupsCategory(List<String> execute_commands, int levels_needed, String message_broadcast, int minutes_needed, int money_needed, String next_group){
         this.execute_commands = execute_commands;
         this.levels_needed = levels_needed;
         this.message_broadcast = message_broadcast;

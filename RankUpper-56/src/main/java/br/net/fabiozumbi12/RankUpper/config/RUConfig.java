@@ -41,7 +41,7 @@ public class RUConfig{
 
 	private File defConfig = new File(RankUpper.get().getConfigDir() ,"rankupper.conf");
 	
-	public RUConfig(GuiceObjectMapperFactory factory) throws IOException {
+	public RUConfig(GuiceObjectMapperFactory factory) {
 		try {
 			Files.createDirectories(RankUpper.get().getConfigDir().toPath());
 			if (!defConfig.exists()){
