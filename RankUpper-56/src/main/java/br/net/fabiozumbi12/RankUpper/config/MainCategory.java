@@ -29,6 +29,12 @@ public class MainCategory {
         public String prefix = "ru_";
     }
 
+    @Setting(value = "auto-rankup", comment="Players need to use the command /ru check to rankup or let automatic?")
+    public boolean auto_rankup = true;
+
+    @Setting(value = "check-rankup", comment="Players need to use the command /ru rankup to rankup or /ru check will do this?")
+    public boolean check_rankup = true;
+
     @Setting(value="afk-support", comment = "Stop counting time when a player is AFK? (Using Nucleus' API only!)\n" +
             "Setting this true without Nucleus (0.23.1+) installed will result in player's time not being counted.")
     public boolean afk_support = false;

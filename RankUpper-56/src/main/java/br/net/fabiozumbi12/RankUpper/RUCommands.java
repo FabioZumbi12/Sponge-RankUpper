@@ -110,30 +110,55 @@ public class RUCommands {
 			    .build();
 		
 		CommandSpec check = CommandSpec.builder()
-				.description(Text.of("Check if requeriments is done to rankup."))
+				.description(Text.of("Check if requirements is done to rankup."))
 				.permission("rankupper.check")
 				.arguments(
 						GenericArguments.optional(GenericArguments.user(Text.of("player"))))
 			    .executor((src, args) -> { {
 			    	if (args.hasAny("player") && src.hasPermission("rankupper.check-others")){
+                        if (RankUpper.get().getConfig().root().check_rankup && RankUpper.get().getConfig().checkRankup(args.<User>getOne("player").get())){
+                            return CommandResult.success();
+                        }
 			    		SendCheckMessage(src, args.<User>getOne("player").get());
 			    	}
 			    	else if (src instanceof Player){
-			    		if (RankUpper.get().getConfig().checkRankup((Player)src)){
-							return CommandResult.success();
-						}
+                        if (RankUpper.get().getConfig().root().check_rankup && RankUpper.get().getConfig().checkRankup((Player)src)){
+                            return CommandResult.success();
+                        }
 						SendCheckMessage(src, (Player)src);
 			    	}			    	
 					return CommandResult.success();
 			    }})
 			    .build();
+
+        CommandSpec rankup = CommandSpec.builder()
+                .description(Text.of("If requirements is done, rankup."))
+                .permission("rankupper.rankup")
+                .arguments(
+                        GenericArguments.optional(GenericArguments.user(Text.of("player"))))
+                .executor((src, args) -> { {
+                    if (args.hasAny("player") && src.hasPermission("rankupper.rankup-others")){
+                        if (RankUpper.get().getConfig().checkRankup(args.<User>getOne("player").get())){
+                            return CommandResult.success();
+                        }
+                        SendCheckMessage(src, args.<User>getOne("player").get());
+                    }
+                    else if (src instanceof Player){
+                        if (RankUpper.get().getConfig().checkRankup((Player)src)){
+                            return CommandResult.success();
+                        }
+                        SendCheckMessage(src, (Player)src);
+                    }
+                    return CommandResult.success();
+                }})
+                .build();
 		
 		CommandSpec playerInfo = CommandSpec.builder()
 				.description(Text.of("See player infos."))
 				.permission("rankupper.player-info")
 				.arguments(GenericArguments.user(Text.of("player")))
 			    .executor((src, args) -> { {	
-			    	HashMap<String, Object> pdb = new HashMap<String, Object>();
+			    	HashMap<String, Object> pdb;
 			    	if (RankUpper.get().getStats().getPlayerDB(args.<User>getOne("player").get()) != null){
 						pdb = RankUpper.get().getStats().getPlayerDB(args.<User>getOne("player").get());
 						RankUpper.get().getLang().sendMessage(src, "Player Info:");
@@ -240,6 +265,7 @@ public class RUCommands {
 			    .child(add, "add")
 			    .child(set, "set")
 			    .child(check, "check")
+			    .child(rankup, "rankup")
 			    .child(top, "top")
 			    .child(playerInfo, "player-info")
 			    .child(saveAll, "save-all")
@@ -309,7 +335,7 @@ public class RUCommands {
 		int moneyNeeded = RankUpper.get().getConfig().root().ranked_groups.get(pgroup).money_needed;
 		int levelNeeded = RankUpper.get().getConfig().root().ranked_groups.get(pgroup).levels_needed;
 				
-		if (minutesNeeded != 0){
+		if (minutesNeeded > 0){
 			if (RankUpper.get().getStats().getPlayerTime(RankUpper.get().getStats().getPlayerKey(playerToCheck)) >= minutesNeeded){
 				sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.time") + ": &a" + RUUtil.timeDescript(minutesNeeded) + " - " + RankUpper.get().getLang().get("config.ok")));
 			} else {
@@ -317,7 +343,7 @@ public class RUCommands {
 			}
 		}
 
-		if (moneyNeeded != 0 && RankUpper.get().getEconomy() != null){
+		if (moneyNeeded > 0 && RankUpper.get().getEconomy() != null){
 			UniqueAccount acc = RankUpper.get().getEconomy().getOrCreateAccount(playerToCheck.getUniqueId()).get();
 			int usermoney = acc.getBalance(RankUpper.get().getEconomy().getDefaultCurrency()).intValue();
 			if (usermoney >= moneyNeeded){
@@ -327,7 +353,7 @@ public class RUCommands {
 			}
 		}
 
-		if (levelNeeded != 0){
+		if (levelNeeded > 0){
 			if (!playerToCheck.get(Keys.EXPERIENCE_LEVEL).isPresent()){
 				sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.levels") + ": &c0/"+levelNeeded + " Lvs."));
 				return;
@@ -342,7 +368,7 @@ public class RUCommands {
 
 		//check for statistics
 		for (Entry<String, Long> key:RankUpper.get().getConfig().root().ranked_groups.get(pgroup).minecraft_statistic.entrySet()){
-			if (Sponge.getRegistry().getType(Statistic.class, key.getKey()).isPresent()){
+			if (key.getValue() > 0 && Sponge.getRegistry().getType(Statistic.class, key.getKey()).isPresent()){
 				Statistic stat = Sponge.getRegistry().getType(Statistic.class, key.getKey()).get();
 				long needed = key.getValue();
 				long actual = playerToCheck.getStatisticData().get(stat).isPresent() ? playerToCheck.getStatisticData().get(stat).get() : 0;

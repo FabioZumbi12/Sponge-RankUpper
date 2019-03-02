@@ -20,9 +20,8 @@ public class RUUtil {
 	
 	public static String DateNow(){
     	DateFormat df = new SimpleDateFormat(RankUpper.get().getConfig().root().date_format);
-        Date today = Calendar.getInstance().getTime(); 
-        String now = df.format(today);
-		return now;    	
+        Date today = Calendar.getInstance().getTime();
+        return df.format(today);
     }
 
 	public static String timeDescript(int timeNeeded) {
@@ -31,13 +30,13 @@ public class RUUtil {
 		long minutes = TimeUnit.MINUTES.toMinutes((timeNeeded-TimeUnit.DAYS.toMinutes(day))-TimeUnit.HOURS.toMinutes(hours));		
 		StringBuilder msg = new StringBuilder();
 		if (day > 0){
-			msg.append(day+" "+RankUpper.get().getLang().get("config.day")+", ");
+			msg.append(day).append(" ").append(RankUpper.get().getLang().get("config.day")).append(", ");
 		}
 		if (hours > 0 ){
-			msg.append(hours+" "+RankUpper.get().getLang().get("config.hour")+", ");
+			msg.append(hours).append(" ").append(RankUpper.get().getLang().get("config.hour")).append(", ");
 		}
 		if (minutes > 0){
-			msg.append(minutes+" "+RankUpper.get().getLang().get("config.minute")+", ");
+			msg.append(minutes).append(" ").append(RankUpper.get().getLang().get("config.minute")).append(", ");
 		}
 		
 		try{
@@ -57,12 +56,11 @@ public class RUUtil {
 	
 	public static Map<String, Integer> sort(Map<String, Integer> unsortMap) {
 		List<Map.Entry<String, Integer>> list =	new LinkedList<Map.Entry<String, Integer>>(unsortMap.entrySet());
-		Collections.sort(list, (o2, o1) -> (o1.getValue()).compareTo(o2.getValue()));
+		list.sort((o2, o1) -> (o1.getValue()).compareTo(o2.getValue()));
 		Map<String, Integer> sortedMap = new LinkedHashMap<String, Integer>();
-		for (Iterator<Map.Entry<String, Integer>> it = list.iterator(); it.hasNext();) {
-			Map.Entry<String, Integer> entry = it.next();
-			sortedMap.put(entry.getKey(), entry.getValue());
-		}
+        for (Map.Entry<String, Integer> entry : list) {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
 		return sortedMap;
 	}
 	

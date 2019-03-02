@@ -192,7 +192,6 @@ public class PlayerStatsDB {
 
     public void AddPlayerTimes() {
         for (Player p: Sponge.getServer().getOnlinePlayers()){
-            RankUpper.get().getLogger().debug("Passou");
 
             if (RankUpper.get().getConfig().root().afk_support){
                 RankUpper.get().getLogger().debug("Berore check AFK!");
@@ -202,7 +201,9 @@ public class PlayerStatsDB {
                 }
             }
             addPlayerTime(p, RankUpper.get().getConfig().root().update_player_time_minutes);
-            RankUpper.get().getConfig().checkRankup(p);
+
+            if (RankUpper.get().getConfig().root().auto_rankup)
+                RankUpper.get().getConfig().checkRankup(p);
         }
     }
 
