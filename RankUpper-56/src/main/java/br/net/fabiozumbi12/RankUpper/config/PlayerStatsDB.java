@@ -65,6 +65,7 @@ public class PlayerStatsDB {
     public void loadPlayerStats(){
         //begin start
         try (Connection conn = RankUpper.get().getConnection()) {
+
             String table = "CREATE TABLE IF NOT EXISTS " + RankUpper.get().getConfig().root().database.prefix + "players ("
                     + "uuid varchar(64) primary key, "
                     + "joindate varchar(64), "
@@ -95,10 +96,10 @@ public class PlayerStatsDB {
             for (Map.Entry<String, StatsCategory.PlayerInfoCategory> stat:stats.players.entrySet()){
                 String sql = "INSERT INTO " + RankUpper.get().getConfig().root().database.prefix + "players (uuid, joindate, lastvisit, name, time) VALUES(?, ?, ?, ?, ?) " +
                         "ON DUPLICATE KEY UPDATE " +
-                        "joindate = VALUES(joindate), " +
-                        "lastvisit = VALUES(lastvisit), " +
-                        "name = VALUES(name), " +
-                        "time = VALUES(name)";
+                        "joindate = ?, " +
+                        "lastvisit = ?, " +
+                        "name = ?, " +
+                        "time = ?";
 
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1, stat.getKey());
@@ -106,6 +107,11 @@ public class PlayerStatsDB {
                 stmt.setString(3, stat.getValue().LastVisit);
                 stmt.setString(4, stat.getValue().PlayerName);
                 stmt.setInt(5, stat.getValue().TimePlayed);
+
+                stmt.setString(6, stat.getValue().JoinDate);
+                stmt.setString(7, stat.getValue().LastVisit);
+                stmt.setString(8, stat.getValue().PlayerName);
+                stmt.setInt(9, stat.getValue().TimePlayed);
 
                 stmt.executeUpdate();
             }
