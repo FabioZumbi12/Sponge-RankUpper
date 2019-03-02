@@ -21,9 +21,9 @@ public class MainCategory {
     @ConfigSerializable
     public static class Database{
 
-        @Setting(comment="The default uri is: \"jdbc:h2:%s/playerstats.db\"\n" +
+        @Setting(comment="The default uri is: \"jdbc:h2:%s/playerstats.db;mode=MySQL\"\n" +
                 "%s will be replaced by rankupper path.")
-        public String uri = "jdbc:h2:%s/playerstats.db";
+        public String uri = "jdbc:h2:%s/playerstats.db;mode=MySQL";
 
         @Setting
         public String prefix = "ru_";
@@ -52,7 +52,7 @@ public class MainCategory {
     public int database_save_interval = 5;
 
     @Setting(value = "update-player-time-minutes", comment="Interval to add online player times.")
-    public int update_player_time_minutes = 5;
+    public int update_player_time_minutes = 1;
 
     @Setting(value = "use-uuids-instead-names", comment="Use uuids to store players stats on playerstats.conf?")
     public boolean use_uuids_instead_names = true;

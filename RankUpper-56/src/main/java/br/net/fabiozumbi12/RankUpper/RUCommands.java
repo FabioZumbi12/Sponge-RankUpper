@@ -159,9 +159,8 @@ public class RUCommands {
 				.permission("rankupper.player-info")
 				.arguments(GenericArguments.user(Text.of("player")))
 			    .executor((src, args) -> { {	
-			    	HashMap<String, Object> pdb;
-			    	if (RankUpper.get().getStats().getPlayerDB(args.<User>getOne("player").get()) != null){
-						pdb = RankUpper.get().getStats().getPlayerDB(args.<User>getOne("player").get());
+			    	HashMap<String, Object> pdb = RankUpper.get().getStats().getPlayerDB(args.<User>getOne("player").get());
+			    	if (!pdb.isEmpty()){
 						RankUpper.get().getLang().sendMessage(src, "Player Info:");
 						src.sendMessage(RUUtil.toText("&3- Nick: &b" + pdb.get("PlayerName")));
 						src.sendMessage(RUUtil.toText("&3- Joind Date: &b" + pdb.get("JoinDate")));
@@ -196,7 +195,7 @@ public class RUCommands {
 				.permission("rankupper.reload")
 			    .executor((src, args) -> { {	
 			    	plugin.reload();
-			    	src.sendMessage(RUUtil.toText("&aRankUpper reloaded!"));
+                    RankUpper.get().getLang().sendMessage(src, "&aRankUpper reloaded!");
 			    	return CommandResult.success();	
 			    }})
 			    .build();
@@ -206,7 +205,7 @@ public class RUCommands {
 				.permission("rankupper.save-all")
 			    .executor((src, args) -> { {	
 			    	RankUpper.get().getStats().savePlayersStats();
-					src.sendMessage(RUUtil.toText("&aPlayer stats Saved!"));
+                    RankUpper.get().getLang().sendMessage(src, "&aPlayer stats Saved!");
 			    	return CommandResult.success();	
 			    }})
 			    .build();
@@ -216,7 +215,7 @@ public class RUCommands {
 				.permission("rankupper.load-all")
 			    .executor((src, args) -> { {
 			    	RankUpper.get().getStats().loadPlayerStats();
-					src.sendMessage(RUUtil.toText("&aPlayer stats Loaded!"));
+                    RankUpper.get().getLang().sendMessage(src, "&aPlayer stats Loaded!");
 			    	return CommandResult.success();
 			    }})
 			    .build();
@@ -250,8 +249,7 @@ public class RUCommands {
 		
 		CommandSpec ru = CommandSpec.builder()
 			    .description(Text.of("Main command for rankupper."))
-			    .executor((src, args) -> { {	    	
-			    	RankUpper.get();
+			    .executor((src, args) -> { {
 					//no args
 			    	src.sendMessage(RUUtil.toText("&b---------------- "+RankUpper.get().instance().getName()+" "+RankUpper.get().instance().getVersion().get()+" ---------------"));
 			    	src.sendMessage(RUUtil.toText("&bDeveloped by &6" + RankUpper.get().instance().getAuthors().get(0) + "."));
@@ -266,7 +264,7 @@ public class RUCommands {
 			    .child(add, "add")
 			    .child(set, "set")
 			    .child(check, "check")
-			    .child(rankup, "rankup")
+			    .child(rankup, "rankup", "up")
 			    .child(top, "top")
 			    .child(playerInfo, "player-info")
 			    .child(saveAll, "save-all")

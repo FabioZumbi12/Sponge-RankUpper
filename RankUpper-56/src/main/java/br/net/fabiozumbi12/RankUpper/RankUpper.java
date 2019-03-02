@@ -30,6 +30,8 @@ import br.net.fabiozumbi12.RankUpper.config.VersionData;
 import com.google.inject.Inject;
 import org.spongepowered.api.service.sql.SqlService;
 
+import javax.sql.DataSource;
+
 @Plugin(id="rankupper", 
 name="RankUpper", 
 version=VersionData.VERSION,
@@ -95,14 +97,14 @@ public class RankUpper {
 	}
 
 	private String dbPath;
-	private SqlService sql;
+	private DataSource dataSource;
 	public Connection getConnection(){
-		try {
-			return sql.getDataSource(dbPath).getConnection();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
+        try {
+            return this.dataSource.getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
 	}
 
 	@Inject
@@ -119,7 +121,7 @@ public class RankUpper {
 
         	logger.info("Init stats module...");
         	this.dbPath = String.format(this.cfgs.root().database.uri, RankUpper.get().getDefConfig().getParentFile().getAbsolutePath());
-			initConn();
+            this.dataSource = Sponge.getServiceManager().provide(SqlService.class).get().getDataSource(dbPath);
 			this.stats = new PlayerStatsDB();
 
             logger.info("Init lang module...");
@@ -153,10 +155,6 @@ public class RankUpper {
         }
 	}
 
-	private void initConn(){
-		sql = Sponge.getServiceManager().provide(SqlService.class).get();
-	}
-
 	private void registerNucleus(){
 		if(cfgs.root().afk_support) {
 			if (Sponge.getPluginManager().getPlugin("nucleus").isPresent()) {
@@ -182,9 +180,22 @@ public class RankUpper {
 		for (Task task:Sponge.getScheduler().getScheduledTasks(this)){
 			task.cancel();
 		}
-		getStats().savePlayersStats();
-		cfgs = new RUConfig(this.factory);
+
+		try{
+		    getStats().savePlayersStats();
+		    getConnection().close();
+        } catch (Exception ignored){}
+
+        cfgs = new RUConfig(this.factory);
 		lang = new RULang();
+
+        try {
+            this.dataSource = Sponge.getServiceManager().provide(SqlService.class).get().getDataSource(dbPath);
+            this.stats = new PlayerStatsDB();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
 		PlayerCounterHandler();
 		AutoSaveHandler();
 		registerNucleus();

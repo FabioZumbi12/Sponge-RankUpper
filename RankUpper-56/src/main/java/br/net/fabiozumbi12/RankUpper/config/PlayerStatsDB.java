@@ -94,6 +94,9 @@ public class PlayerStatsDB {
     public void savePlayersStats(){
         try (Connection conn = RankUpper.get().getConnection()) {
             for (Map.Entry<String, StatsCategory.PlayerInfoCategory> stat:stats.players.entrySet()){
+                if (stat.getValue().PlayerName == null)
+                    continue;
+
                 String sql = "INSERT INTO " + RankUpper.get().getConfig().root().database.prefix + "players (uuid, joindate, lastvisit, name, time) VALUES(?, ?, ?, ?, ?) " +
                         "ON DUPLICATE KEY UPDATE " +
                         "joindate = ?, " +
@@ -122,10 +125,7 @@ public class PlayerStatsDB {
 
 
     public void AddPlayer(Player p) {
-        String PlayerString = p.getUniqueId().toString();
-        if (!RankUpper.get().getConfig().root().use_uuids_instead_names){
-            PlayerString = p.getName();
-        }
+        String PlayerString = getPlayerKey(p);
         StatsCategory.PlayerInfoCategory pStat = new StatsCategory.PlayerInfoCategory();
 
         pStat.PlayerName = p.getName();
@@ -138,10 +138,7 @@ public class PlayerStatsDB {
     }
 
     public void AddPlayer(User p) {
-        String PlayerString = p.getUniqueId().toString();
-        if (!RankUpper.get().getConfig().root().use_uuids_instead_names){
-            PlayerString = p.getName();
-        }
+        String PlayerString = getPlayerKey(p);
         StatsCategory.PlayerInfoCategory pStat = new StatsCategory.PlayerInfoCategory();
 
         pStat.PlayerName = p.getName();
@@ -154,29 +151,23 @@ public class PlayerStatsDB {
     }
 
     public void setPlayerTime(String pkey, int time){
-        stats.players.get(pkey).TimePlayed = time;
+        if (stats.players.containsKey(pkey)) stats.players.get(pkey).TimePlayed = time;
     }
 
     public int addPlayerTime(User p, int ammount){
-        String PlayerString = p.getUniqueId().toString();
-        if (!RankUpper.get().getConfig().root().use_uuids_instead_names){
-            PlayerString = p.getName();
-        }
+        String PlayerString = getPlayerKey(p);
         int time = stats.players.get(PlayerString).TimePlayed+ammount;
         stats.players.get(PlayerString).TimePlayed = (time);
         return time;
     }
 
     public void setLastVisit(User p){
-        String PlayerString = p.getUniqueId().toString();
-        if (!RankUpper.get().getConfig().root().use_uuids_instead_names){
-            PlayerString = p.getName();
-        }
+        String PlayerString = getPlayerKey(p);
         stats.players.get(PlayerString).LastVisit = RUUtil.DateNow();
     }
 
     public int getPlayerTime(String uuid){
-        return stats.players.get(uuid).TimePlayed;
+        return stats.players.containsKey(uuid) ? stats.players.get(uuid).TimePlayed : 0;
     }
 
     public String getPlayerKey(User user){
@@ -184,16 +175,19 @@ public class PlayerStatsDB {
             return user.getUniqueId().toString();
         } else if (!RankUpper.get().getConfig().root().use_uuids_instead_names && stats.players.containsKey(user.getName())){
             return user.getName();
+        } else {
+            for (Map.Entry<String, StatsCategory.PlayerInfoCategory> values:stats.players.entrySet()){
+                if (values.getValue().PlayerName != null && values.getValue().PlayerName.equals(user.getName()))
+                    return values.getKey();
+            }
         }
         return null;
     }
 
     public HashMap<String, Object> getPlayerDB(User p){
         HashMap<String, Object> pdb = new HashMap<>();
-        String PlayerString = p.getUniqueId().toString();
-        if (!RankUpper.get().getConfig().root().use_uuids_instead_names){
-            PlayerString = p.getName();
-        }
+
+        String PlayerString = getPlayerKey(p);
         pdb.put("PlayerName", stats.players.get(PlayerString).PlayerName);
         pdb.put("JoinDate", stats.players.get(PlayerString).JoinDate);
         pdb.put("LastVisit", stats.players.get(PlayerString).LastVisit);
@@ -217,5 +211,4 @@ public class PlayerStatsDB {
                 RankUpper.get().getConfig().checkRankup(p);
         }
     }
-
 }

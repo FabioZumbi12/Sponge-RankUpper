@@ -99,7 +99,7 @@ public class RULang {
 	  }
 	
 	public String get(String key){		
-		String FMsg = "";
+		String FMsg;
 
 		if (Lang.get(key) == null){
 			FMsg = "&c&oMissing language string for &4" + key;
@@ -113,10 +113,8 @@ public class RULang {
 	public void sendMessage(CommandSource p, String key){		
 		if (Lang.get(key) == null){
 			p.sendMessage(RUUtil.toText(get("_rankupper.prefix")+" "+key));
-		} else if (get(key).equalsIgnoreCase("")){
-			return;
-		} else {
-			p.sendMessage(RUUtil.toText(get("_rankupper.prefix")+" "+get(key)));
+		} else if (!get(key).equalsIgnoreCase("")){
+            p.sendMessage(RUUtil.toText(get("_rankupper.prefix")+" "+get(key)));
 		}
 	}
 	

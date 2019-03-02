@@ -13,6 +13,7 @@ public class RUListener {
     	RankUpper.get().getLogger().debug("Player Join Event!");
     	if (RankUpper.get().getStats().getPlayerKey(p) == null){
     		RankUpper.get().getStats().AddPlayer(p);
-    	}    	
+    	}
+        RankUpper.get().getStats().setLastVisit(p);
 	}	
 }
