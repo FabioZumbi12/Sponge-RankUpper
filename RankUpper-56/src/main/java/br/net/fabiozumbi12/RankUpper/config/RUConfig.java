@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import br.net.fabiozumbi12.RankUpper.RUAFK;
 import br.net.fabiozumbi12.RankUpper.RUUtil;
@@ -23,11 +24,15 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.scoreboard.Score;
+import org.spongepowered.api.scoreboard.Scoreboard;
+import org.spongepowered.api.scoreboard.objective.Objective;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.statistic.Statistic;
 
 import com.google.common.reflect.TypeToken;
+import org.spongepowered.api.text.Text;
 
 public class RUConfig{
 	
@@ -144,7 +149,19 @@ public class RUConfig{
 				}
 			}
 		}
-		
+
+		//check scoreboards
+        if (Sponge.getServer().getServerScoreboard().isPresent()){
+            for (Entry<String, Long> key:root.ranked_groups.get(pgroup).minecraft_scoreboards.entrySet()){
+                if (key.getValue() > 0 && !Sponge.getServer().getServerScoreboard().get().getScores(Text.of(key.getKey())).isEmpty()){
+                    Score score = Sponge.getServer().getServerScoreboard().get().getScores(Text.of(key.getKey())).stream().findFirst().get();
+                    if (score.getScore() < key.getValue()){
+                        return false;
+                    }
+                }
+            }
+        }
+
 		if (minutesNeeded != 0){
 			if (RankUpper.get().getStats().getPlayerTime(RankUpper.get().getStats().getPlayerKey(p)) < minutesNeeded){
 				return false;

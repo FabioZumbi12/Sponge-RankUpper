@@ -17,6 +17,7 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.scoreboard.Score;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.statistic.Statistic;
@@ -379,7 +380,23 @@ public class RUCommands {
 				}
 			}
 		}
-	}
+
+        //check scoreboards
+        if (Sponge.getServer().getServerScoreboard().isPresent()){
+            for (Entry<String, Long> key:RankUpper.get().getConfig().root().ranked_groups.get(pgroup).minecraft_scoreboards.entrySet()){
+                if (key.getValue() > 0 && !Sponge.getServer().getServerScoreboard().get().getScores(Text.of(key.getKey())).isEmpty()){
+                    Score score = Sponge.getServer().getServerScoreboard().get().getScores(Text.of(key.getKey())).stream().findFirst().get();
+                    long needed = key.getValue();
+                    long actual = score.getScore();
+                    if (actual >= needed){
+                        sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.scoreboards").replace("{score}", score.getName().toPlain()) + ": &a"+actual+"/"+needed + " - " + RankUpper.get().getLang().get("config.ok")));
+                    } else {
+                        sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.scoreboards").replace("{score}", score.getName().toPlain()) + ": &c"+actual+"/"+needed));
+                    }
+                }
+            }
+        }
+    }
 	
 	private static void sendHelp(CommandSource source){
 		RankUpper.get().getLang().sendMessage(source, RankUpper.get().getLang().get("commands.commandshelp"));
