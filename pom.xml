@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>br.net.fabiozumbi12.RankUpper</groupId>
 	<artifactId>RankUpper</artifactId>
-	<version>4.0.2</version>
+	<version>4.0.3</version>
 	<packaging>pom</packaging>
 	<name>RankUpper</name>
 

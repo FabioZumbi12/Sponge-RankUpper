@@ -93,8 +93,12 @@ public class PlayerStatsDB {
     public void savePlayersStats(){
         try (Connection conn = RankUpper.get().getConnection()) {
             for (Map.Entry<String, StatsCategory.PlayerInfoCategory> stat:stats.players.entrySet()){
-                String sql = String.format("MERGE INTO %splayers(%s, %s, %s, %s, %s) values(?, ?, ?, ?, ?)",
-                        RankUpper.get().getConfig().root().database.prefix, "uuid", "joindate", "lastvisit", "name", "time");
+                String sql = "INSERT INTO " + RankUpper.get().getConfig().root().database.prefix + "players (uuid, joindate, lastvisit, name, time) VALUES(?, ?, ?, ?, ?) " +
+                        "ON DUPLICATE KEY UPDATE " +
+                        "joindate = VALUES(joindate), " +
+                        "lastvisit = VALUES(lastvisit), " +
+                        "name = VALUES(name), " +
+                        "time = VALUES(name)";
 
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1, stat.getKey());
@@ -102,6 +106,7 @@ public class PlayerStatsDB {
                 stmt.setString(3, stat.getValue().LastVisit);
                 stmt.setString(4, stat.getValue().PlayerName);
                 stmt.setInt(5, stat.getValue().TimePlayed);
+
                 stmt.executeUpdate();
             }
         } catch (SQLException e) {
