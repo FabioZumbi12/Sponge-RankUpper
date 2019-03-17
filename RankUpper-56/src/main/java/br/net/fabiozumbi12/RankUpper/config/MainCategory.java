@@ -21,8 +21,9 @@ public class MainCategory {
     @ConfigSerializable
     public static class Database{
 
-        @Setting(comment="The default uri is: \"jdbc:h2:%s/playerstats.db;mode=MySQL\"\n" +
-                "%s will be replaced by rankupper path.")
+        @Setting(comment="This is the uri connection\n" +
+                "Default H2 uri: \"jdbc:h2:%s/playerstats.db;mode=MySQL\" (%s will be replaced by rankupper path)\n" +
+                "Mysql uri: \"jdbc:mysql://localhost:3306/playerstats?useUnicode=true&characterEncoding=utf8&user=myuser&password=mypwd\"")
         public String uri = "jdbc:h2:%s/playerstats.db;mode=MySQL";
 
         @Setting
