@@ -55,7 +55,7 @@ public class MainCategory {
     @Setting(value = "update-player-time-minutes", comment="Interval to add online player times.")
     public int update_player_time_minutes = 1;
 
-    @Setting(value = "use-uuids-instead-names", comment="Use uuids to store players stats on playerstats.conf?")
+    @Setting(value = "use-uuids-instead-names", comment="Use uuids to store players stats on database?")
     public boolean use_uuids_instead_names = true;
 
     @Setting(value = "exclude-groups")

@@ -50,6 +50,8 @@ public class PlayerStatsDB {
                             + node.getValue().getNode("TimePlayed").getString()+", ");
                 }
                 RankUpper.get().getLogger().warning("Player stats imported to database!");
+                File backup = new File(RankUpper.get().getConfigDir(), "playerstats-old.conf");
+                if (backup.exists()) backup.delete();
                 statConfig.renameTo(new File(RankUpper.get().getConfigDir(), "playerstats-old.conf"));
             }
         } catch(IOException e1){
@@ -71,7 +73,7 @@ public class PlayerStatsDB {
                     + "joindate varchar(64), "
                     + "name varchar(64), "
                     + "lastvisit varchar(64), "
-                    + "time int)";
+                    + "time bigint)";
             conn.prepareStatement(table).execute();
 
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + RankUpper.get().getConfig().root().database.prefix + "players");
@@ -96,6 +98,14 @@ public class PlayerStatsDB {
             for (Map.Entry<String, StatsCategory.PlayerInfoCategory> stat:stats.players.entrySet()){
                 if (stat.getValue().PlayerName == null)
                     continue;
+
+                RankUpper.get().getLogger().debug("\nStats: " +
+                        "\nKey: " + stat.getKey() +
+                        "\nPlayerName: " + stat.getValue().PlayerName +
+                        "\nLastVisit: " + stat.getValue().LastVisit +
+                        "\nJoinDate: " + stat.getValue().JoinDate +
+                        "\nTimePlayed: " + stat.getValue().TimePlayed
+                );
 
                 String sql = "INSERT INTO " + RankUpper.get().getConfig().root().database.prefix + "players (uuid, joindate, lastvisit, name, time) VALUES(?, ?, ?, ?, ?) " +
                         "ON DUPLICATE KEY UPDATE " +
@@ -123,28 +133,14 @@ public class PlayerStatsDB {
         }
     }
 
-
-    public void AddPlayer(Player p) {
-        String PlayerString = getPlayerKey(p);
-        StatsCategory.PlayerInfoCategory pStat = new StatsCategory.PlayerInfoCategory();
-
-        pStat.PlayerName = p.getName();
-        pStat.JoinDate = RUUtil.DateNow();
-        pStat.LastVisit = RUUtil.DateNow();
-        pStat.TimePlayed = 0;
-
-        stats.players.put(PlayerString, pStat);
-        savePlayersStats();
-    }
-
     public void AddPlayer(User p) {
-        String PlayerString = getPlayerKey(p);
-        StatsCategory.PlayerInfoCategory pStat = new StatsCategory.PlayerInfoCategory();
-
-        pStat.PlayerName = p.getName();
-        pStat.JoinDate = RUUtil.DateNow();
-        pStat.LastVisit = RUUtil.DateNow();
-        pStat.TimePlayed = 0;
+        String PlayerString;
+        if (RankUpper.get().getConfig().root().use_uuids_instead_names){
+            PlayerString = p.getUniqueId().toString();
+        } else {
+            PlayerString = p.getName();
+        }
+        StatsCategory.PlayerInfoCategory pStat = new StatsCategory.PlayerInfoCategory(RUUtil.DateNow(), RUUtil.DateNow(), p.getName(), 0);
 
         stats.players.put(PlayerString, pStat);
         savePlayersStats();

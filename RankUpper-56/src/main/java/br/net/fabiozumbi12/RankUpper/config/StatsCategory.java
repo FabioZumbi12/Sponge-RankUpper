@@ -2,11 +2,12 @@ package br.net.fabiozumbi12.RankUpper.config;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class StatsCategory {
     public StatsCategory(){}
 
-    public Map<String, PlayerInfoCategory> players = new HashMap<>();
+    public ConcurrentHashMap<String, PlayerInfoCategory> players = new ConcurrentHashMap<>();
 
     public static class PlayerInfoCategory {
         public PlayerInfoCategory(){}

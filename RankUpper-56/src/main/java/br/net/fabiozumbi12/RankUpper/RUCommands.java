@@ -1,12 +1,21 @@
 package br.net.fabiozumbi12.RankUpper;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
 
+import br.net.fabiozumbi12.RankUpper.config.MainCategory;
 import br.net.fabiozumbi12.RankUpper.config.RankedGroupsCategory;
 import br.net.fabiozumbi12.RankUpper.config.StatsCategory;
 
+import com.google.common.reflect.TypeToken;
+import ninja.leaping.configurate.ConfigurationOptions;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandCallable;
 import org.spongepowered.api.command.CommandException;
@@ -226,7 +235,7 @@ public class RUCommands {
 			    .executor((src, args) -> { {	
 			    	Map<String, RankedGroupsCategory> groups = RankUpper.get().getConfig().root().ranked_groups;
 			    	src.sendMessage(RUUtil.toText("&b--------------- RankUpper Groups ---------------"));
-					groups.keySet().stream().forEachOrdered((key)->{
+					groups.keySet().forEach((key)->{
 			    		src.sendMessage(RUUtil.toText("&7Group: &a"+key));
 			    		try {
 			    			src.sendMessage(RUUtil.toText("&7Commands: "));
@@ -246,33 +255,66 @@ public class RUCommands {
 			    	return CommandResult.success();	
 			    }})
 			    .build();
-		
-		CommandSpec ru = CommandSpec.builder()
-			    .description(Text.of("Main command for rankupper."))
-			    .executor((src, args) -> { {
-					//no args
-			    	src.sendMessage(RUUtil.toText("&b---------------- "+RankUpper.get().instance().getName()+" "+RankUpper.get().instance().getVersion().get()+" ---------------"));
-			    	src.sendMessage(RUUtil.toText("&bDeveloped by &6" + RankUpper.get().instance().getAuthors().get(0) + "."));
-			    	src.sendMessage(RUUtil.toText("&bFor more information about the commands, type [" + "&6/ru ?&b]."));
-			    	src.sendMessage(RUUtil.toText("&b---------------------------------------------------"));			         
-			    	return CommandResult.success();	
-			    }})
-			    .child(help, "?", "help")
-			    .child(reload, "reload", "rl")
-			    .child(addgroup, "addgroup")
-			    .child(setgroup, "setgroup")
-			    .child(add, "add")
-			    .child(set, "set")
-			    .child(check, "check")
-			    .child(rankup, "rankup", "up")
-			    .child(top, "top")
-			    .child(playerInfo, "player-info")
-			    .child(saveAll, "save-all")
-			    .child(loadAll, "load-all")
-			    .child(listGroups, "list-groups")
-			    .build();
-		
-		return ru;	
+
+        CommandSpec backup = CommandSpec.builder()
+                .description(Text.of("Mak a backup of player stats to file."))
+                .permission("rankupper.backup")
+                .executor((src, args) -> { {
+                    try {
+                        File statsConf = new File(RankUpper.get().getConfigDir() ,"playerstats.conf");
+                        ConfigurationLoader<CommentedConfigurationNode> statsManager = HoconConfigurationLoader.builder().setFile(statsConf).build();
+                        CommentedConfigurationNode tempStats = statsManager.load();
+
+                        RankUpper.get().getStats().stats().players.forEach((key, value) -> {
+                            String pKey = key;
+                            if (pKey == null || pKey.isEmpty()){
+                                if (Sponge.getServer().getPlayer(value.PlayerName).isPresent())
+                                    pKey = Sponge.getServer().getPlayer(value.PlayerName).get().getUniqueId().toString();
+                                else
+                                    pKey = value.PlayerName;
+                            }
+                            CommentedConfigurationNode pNode = tempStats.getNode(pKey);
+                            pNode.getNode("JoinDate").setValue(value.JoinDate);
+                            pNode.getNode("LastVisist").setValue(value.LastVisit);
+                            pNode.getNode("PlayerName").setValue(value.PlayerName);
+                            pNode.getNode("TimePlayed").setValue(value.TimePlayed);
+                        });
+
+                        statsManager.save(tempStats);
+                        RankUpper.get().getLang().sendMessage(src, "&aBackup saved to playerstats.conf\n&eThis backup will be loaded on next server start or on ru reload!");
+
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                    return CommandResult.success();
+                }})
+                .build();
+
+        return CommandSpec.builder()
+                .description(Text.of("Main command for rankupper."))
+                .executor((src, args) -> { {
+                    //no args
+                    src.sendMessage(RUUtil.toText("&b---------------- "+RankUpper.get().instance().getName()+" "+RankUpper.get().instance().getVersion().get()+" ---------------"));
+                    src.sendMessage(RUUtil.toText("&bDeveloped by &6" + RankUpper.get().instance().getAuthors().get(0) + "."));
+                    src.sendMessage(RUUtil.toText("&bFor more information about the commands, type [" + "&6/ru ?&b]."));
+                    src.sendMessage(RUUtil.toText("&b---------------------------------------------------"));
+                    return CommandResult.success();
+                }})
+                .child(help, "?", "help")
+                .child(reload, "reload", "rl")
+                .child(addgroup, "addgroup")
+                .child(setgroup, "setgroup")
+                .child(add, "add")
+                .child(set, "set")
+                .child(check, "check")
+                .child(rankup, "rankup", "up")
+                .child(top, "top")
+                .child(playerInfo, "player-info")
+                .child(saveAll, "save-all")
+                .child(loadAll, "load-all")
+                .child(listGroups, "list-groups")
+                .child(backup, "backup")
+                .build();
 	}
 
 	private static void ExecuteTopCount(CommandSource p) {
@@ -406,5 +448,5 @@ public class RUCommands {
 				source.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("commands.help."+key+".others")));
 			}			
 		}
-	}	
+	}
 }
