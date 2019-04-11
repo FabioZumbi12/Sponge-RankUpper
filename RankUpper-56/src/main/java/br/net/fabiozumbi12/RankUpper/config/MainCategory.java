@@ -61,7 +61,8 @@ public class MainCategory {
     @Setting(value = "exclude-groups")
     public List<String> exclude_groups = Arrays.asList("staff_group", "donor_group");
 
-    @Setting(value = "ranked-groups", comment ="IMPORTANT: Change from \"default\" to exact group name the player need to is in to be promoted to next group")
+    @Setting(value = "ranked-groups", comment ="IMPORTANT: Change from \"default\" to exact group name the player need to is in to be promoted to next group\n" +
+            "For Minecraft statistics, set to -1 to disable a check (or remove from list but if empty, a default will be created).")
     public Map<String, RankedGroupsCategory> ranked_groups = new HashMap<>();
 
     private void defaultGroups(){

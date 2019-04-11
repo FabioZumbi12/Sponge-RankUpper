@@ -150,9 +150,9 @@ public class PlayerStatsDB {
         if (stats.players.containsKey(pkey)) stats.players.get(pkey).TimePlayed = time;
     }
 
-    public int addPlayerTime(User p, int ammount){
+    public int addPlayerTime(User p, int amount){
         String PlayerString = getPlayerKey(p);
-        int time = stats.players.get(PlayerString).TimePlayed+ammount;
+        int time = stats.players.get(PlayerString).TimePlayed+amount;
         stats.players.get(PlayerString).TimePlayed = (time);
         return time;
     }
