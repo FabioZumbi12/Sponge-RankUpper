@@ -161,9 +161,13 @@ public class RUConfig {
 		for (Entry<String, Long> key:root.ranked_groups.get(pgroup).minecraft_statistic.entrySet()){
 			if (key.getValue() > 0 && Sponge.getRegistry().getType(Statistic.class, key.getKey()).isPresent()){
 				Statistic stat = Sponge.getRegistry().getType(Statistic.class, key.getKey()).get();
-				if (!p.getStatisticData().get(stat).isPresent() || p.getStatisticData().get(stat).get() < key.getValue()){
-					return false;
-				}
+				try {
+				    if (!p.getStatisticData().get(stat).isPresent() || p.getStatisticData().get(stat).get() < key.getValue()){
+                        return false;
+                    }
+                } catch (Exception ignored){
+                    return false;
+                }
 			}
 		}
 
