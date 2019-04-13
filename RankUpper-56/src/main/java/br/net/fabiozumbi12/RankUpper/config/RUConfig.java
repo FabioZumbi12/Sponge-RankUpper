@@ -91,8 +91,9 @@ public class RUConfig {
 
     private void save(){
     	try {
+            configRoot.setValue(TypeToken.of(MainCategory.class), root);
 			cfgLoader.save(configRoot);
-		} catch (IOException e) {
+		} catch (IOException | ObjectMappingException e) {
 			RankUpper.get().getLogger().severe("Problems during save file:");
 			e.printStackTrace();
 		}

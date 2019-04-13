@@ -35,7 +35,7 @@ public class RankedGroupsCategory {
 
     @Setting(value = "minecraft-statistics", comment="Use some Minecraft Statistics to track for rankup.\n" +
             "This option will only accept LONG types for statistics.\n" +
-            "See all statistics names here: https://jd.spongepowered.org/7.0.0/org/spongepowered/api/statistic/Statistics.html\n" +
+            "See all statistics names here: https://jd.spongepowered.org/7.1.0/org/spongepowered/api/statistic/Statistics.html\n" +
             "Set to 0 or -1 to disable.")
     public Map<String, Long> minecraft_statistic = new HashMap<>();
 
