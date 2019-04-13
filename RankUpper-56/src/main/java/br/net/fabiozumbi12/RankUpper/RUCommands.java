@@ -1,21 +1,11 @@
 package br.net.fabiozumbi12.RankUpper;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-
-import br.net.fabiozumbi12.RankUpper.config.MainCategory;
 import br.net.fabiozumbi12.RankUpper.config.RankedGroupsCategory;
 import br.net.fabiozumbi12.RankUpper.config.StatsCategory;
-
-import com.google.common.reflect.TypeToken;
-import ninja.leaping.configurate.ConfigurationOptions;
+import me.rojo8399.placeholderapi.PlaceholderService;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandCallable;
 import org.spongepowered.api.command.CommandException;
@@ -31,6 +21,13 @@ import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.statistic.Statistic;
 import org.spongepowered.api.text.Text;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 
 public class RUCommands {
 
@@ -432,6 +429,29 @@ public class RUCommands {
                         sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.scoreboards").replace("{score}", score.getName().toPlain()) + ": &a"+actual+"/"+needed + " - " + RankUpper.get().getLang().get("config.ok")));
                     } else {
                         sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.scoreboards").replace("{score}", score.getName().toPlain()) + ": &c"+actual+"/"+needed));
+                    }
+                }
+            }
+        }
+
+        //placeholderAPI requirements
+        if (Sponge.getServer().getServerScoreboard().isPresent()){
+            for (Entry<String, Long> key:RankUpper.get().getConfig().root().ranked_groups.get(pgroup).placeholder_api_requirements.entrySet()){
+                long needed = key.getValue();
+                long actual;
+                if (Sponge.getPluginManager().getPlugin("placeholderapi").isPresent()) {
+                    Optional<PlaceholderService> phapiOpt = Sponge.getServiceManager().provide(PlaceholderService.class);
+                    if (phapiOpt.isPresent() && phapiOpt.get().isRegistered(key.getKey())) {
+                        PlaceholderService phapi = phapiOpt.get();
+                        Optional<Long> optVal = phapi.parse(key.getKey(), playerToCheck, playerToCheck, Long.class);
+                        if (optVal.isPresent()){
+                            actual = optVal.get();
+                            if (actual >= key.getValue()){
+                                sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.placeholderapi").replace("{placeholder}", key.getKey().replace("%", "")) + ": &a"+actual+"/"+needed + " - " + RankUpper.get().getLang().get("config.ok")));
+                            } else {
+                                sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.placeholderapi").replace("{placeholder}", key.getKey().replace("%", "")) + ": &c"+actual+"/"+needed));
+                            }
+                        }
                     }
                 }
             }

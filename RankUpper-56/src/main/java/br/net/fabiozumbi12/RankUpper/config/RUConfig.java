@@ -1,40 +1,33 @@
 package br.net.fabiozumbi12.RankUpper.config;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.sql.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import br.net.fabiozumbi12.RankUpper.RUAFK;
 import br.net.fabiozumbi12.RankUpper.RUUtil;
 import br.net.fabiozumbi12.RankUpper.RankUpper;
+import com.google.common.reflect.TypeToken;
+import me.rojo8399.placeholderapi.PlaceholderService;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.GuiceObjectMapperFactory;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.scoreboard.Score;
-import org.spongepowered.api.scoreboard.Scoreboard;
-import org.spongepowered.api.scoreboard.objective.Objective;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.statistic.Statistic;
-
-import com.google.common.reflect.TypeToken;
 import org.spongepowered.api.text.Text;
 
-public class RUConfig{
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Optional;
+
+public class RUConfig {
 	
 	//getters
 	private CommentedConfigurationNode configRoot;
@@ -44,12 +37,11 @@ public class RUConfig{
 		return this.root;
 	}
 
-	private File defConfig = new File(RankUpper.get().getConfigDir() ,"rankupper.conf");
-	
-	public RUConfig(GuiceObjectMapperFactory factory) {
+    public RUConfig(GuiceObjectMapperFactory factory) {
 		try {
 			Files.createDirectories(RankUpper.get().getConfigDir().toPath());
-			if (!defConfig.exists()){
+            File defConfig = new File(RankUpper.get().getConfigDir(), "rankupper.conf");
+            if (!defConfig.exists()){
 				RankUpper.get().getLogger().log("Creating config file...");
 				defConfig.createNewFile();
 			}
@@ -59,6 +51,30 @@ public class RUConfig{
 			configRoot = cfgLoader.load(ConfigurationOptions.defaults().setObjectMapperFactory(factory).setShouldCopyDefaults(true));
 			root = configRoot.getValue(TypeToken.of(MainCategory.class), new MainCategory());
 
+			if (root.ranked_groups.isEmpty()){
+                RankedGroupsCategory rgc = new RankedGroupsCategory(Arrays.asList(
+                        "lp user {player} parent unset {oldgroup}",
+                        "lp user {player} parent set {newgroup}",
+                        "xp 50L {player}"),
+                        50,
+                        "&a>> The player &6{player} &ahas played for &6{time} &aand now is rank {newgroup} of server.",
+                        120 ,
+                        1000,
+                        "member");
+                rgc.minecraft_statistic.put("MOB_KILLS", 100L);
+                rgc.minecraft_scoreboards.put("TeamBlue", 50L);
+                rgc.placeholder_api_requirements.put("%Pokedex%", 200L);
+                root.ranked_groups.put("group-example", rgc);
+            }
+
+			for (RankedGroupsCategory group:root.ranked_groups.values()){
+			    if (group.minecraft_statistic.isEmpty())
+			        group.minecraft_statistic.put("MOB_KILLS", -1L);
+                if (group.minecraft_scoreboards.isEmpty())
+                    group.minecraft_scoreboards.put("TeamBlue", -1L);
+                if (group.placeholder_api_requirements.isEmpty())
+                    group.placeholder_api_requirements.put("%Pokedex%", -1L);
+            }
 
 		} catch (IOException e1) {			
 			RankUpper.get().getLogger().severe("The default configuration could not be loaded or created!");
@@ -73,7 +89,7 @@ public class RUConfig{
 		RankUpper.get().getLogger().log("All configurations loaded!");
 	}
 
-    public void save(){
+    private void save(){
     	try {
 			cfgLoader.save(configRoot);
 		} catch (IOException e) {
@@ -82,7 +98,7 @@ public class RUConfig{
 		}
     }
 
-	public boolean groupExists(String group){
+	private boolean groupExists(String group){
 		return root.ranked_groups.containsKey(group);
 	}
 	
@@ -158,6 +174,26 @@ public class RUConfig{
                     if (score.getScore() < key.getValue()){
                         return false;
                     }
+                }
+            }
+        }
+
+        //placeholderAPI requirements
+        if (Sponge.getServer().getServerScoreboard().isPresent()){
+            for (Entry<String, Long> key:root.ranked_groups.get(pgroup).placeholder_api_requirements.entrySet()){
+                long value = 0;
+                if (Sponge.getPluginManager().getPlugin("placeholderapi").isPresent()) {
+                    Optional<PlaceholderService> phapiOpt = Sponge.getServiceManager().provide(PlaceholderService.class);
+                    if (phapiOpt.isPresent()) {
+                        PlaceholderService phapi = phapiOpt.get();
+                        Optional<Long> optVal = phapi.parse(key.getKey(), p, p, Long.class);
+                        if (optVal.isPresent()){
+                            value = optVal.get();
+                        }
+                    }
+                }
+                if (value < key.getValue()){
+                    return false;
                 }
             }
         }

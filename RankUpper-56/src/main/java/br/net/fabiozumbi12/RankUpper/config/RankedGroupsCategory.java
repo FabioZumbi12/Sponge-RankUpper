@@ -37,23 +37,15 @@ public class RankedGroupsCategory {
             "This option will only accept LONG types for statistics.\n" +
             "See all statistics names here: https://jd.spongepowered.org/7.0.0/org/spongepowered/api/statistic/Statistics.html\n" +
             "Set to 0 or -1 to disable.")
-    public Map<String, Long> minecraft_statistic = createMapStats();
-    private Map<String, Long> createMapStats()
-    {
-        Map<String,Long> myMap = new HashMap<>();
-        myMap.put("MOB_KILLS", 100L);
-        return myMap;
-    }
+    public Map<String, Long> minecraft_statistic = new HashMap<>();
 
     @Setting(value = "minecraft-scoreboards", comment="Use the values of your scoreboard's Scores by name to rank up players.\n" +
             "Set to 0 or -1 to disable.")
-    public Map<String, Long> minecraft_scoreboards = createMapScores();
-    private Map<String, Long> createMapScores()
-    {
-        Map<String,Long> myMap = new HashMap<>();
-        myMap.put("TeamBlue", 50L);
-        return myMap;
-    }
+    public Map<String, Long> minecraft_scoreboards = new HashMap<>();
+
+    @Setting(value = "placeholder-api-requirements", comment="If using PlaceholderApi, just put the placeholder on key like \"%PokeCount%\" = 10 (as example)" +
+            "Set to 0 or -1 to disable.")
+    public Map<String, Long> placeholder_api_requirements = new HashMap<>();
 
     RankedGroupsCategory(List<String> execute_commands, int levels_needed, String message_broadcast, int minutes_needed, int money_needed, String next_group){
         this.execute_commands = execute_commands;

@@ -1,7 +1,6 @@
 package br.net.fabiozumbi12.RankUpper;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -20,6 +19,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
+import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
@@ -36,7 +36,10 @@ import javax.sql.DataSource;
 name="RankUpper", 
 version=VersionData.VERSION,
 authors="FabioZumbi12", 
-description="Auto rankup plugin based on economy, time or xps")
+description="Auto rankup plugin based on various requirements",
+dependencies = {
+        @Dependency(id = "placeholderapi", optional = true)
+})
 public class RankUpper {
 	
 	@Inject

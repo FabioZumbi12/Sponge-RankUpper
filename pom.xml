@@ -32,6 +32,11 @@
 			<url>http://repo.drnaylor.co.uk/artifactory/minecraft</url>
 		</repository>
 
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+
 	</repositories>
 
 	<build>

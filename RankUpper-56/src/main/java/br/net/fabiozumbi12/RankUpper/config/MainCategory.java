@@ -11,9 +11,7 @@ import java.util.Map;
 @ConfigSerializable
 public class MainCategory {
 
-    public MainCategory(){
-        defaultGroups();
-    }
+    public MainCategory(){}
 
     @Setting
     public Database database = new Database();
@@ -64,18 +62,4 @@ public class MainCategory {
     @Setting(value = "ranked-groups", comment ="IMPORTANT: Change from \"default\" to exact group name the player need to is in to be promoted to next group\n" +
             "For Minecraft statistics, set to -1 to disable a check (or remove from list but if empty, a default will be created).")
     public Map<String, RankedGroupsCategory> ranked_groups = new HashMap<>();
-
-    private void defaultGroups(){
-        RankedGroupsCategory rgc = new RankedGroupsCategory(Arrays.asList(
-                "lp user {player} parent unset {oldgroup}",
-                "lp user {player} parent set {newgroup}",
-                "xp 50L {player}"),
-                50,
-                "&a>> The player &6{player} &ahas played for &6{time} &aand now is rank {newgroup} of server.",
-                120 ,
-                1000,
-                "member");
-        rgc.minecraft_statistic.put("MOB_KILLS", 100L);
-        ranked_groups.put("group-example", rgc);
-    }
 }

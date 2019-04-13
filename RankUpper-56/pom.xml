@@ -29,6 +29,15 @@
 			<version>${nucleusVersion}</version>
 			<scope>provided</scope>
 		</dependency>
+
+        <!-- PlaceholdersAPI -->
+        <dependency>
+            <groupId>com.github.rojo8399</groupId>
+            <artifactId>PlaceholderAPI</artifactId>
+            <version>LATEST</version>
+            <scope>provided</scope>
+        </dependency>
+
 	</dependencies>
 
 	<build>
