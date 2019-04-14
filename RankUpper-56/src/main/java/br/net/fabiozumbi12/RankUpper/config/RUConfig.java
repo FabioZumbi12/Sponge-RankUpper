@@ -184,39 +184,35 @@ public class RUConfig {
         }
 
         //placeholderAPI requirements
-        if (Sponge.getServer().getServerScoreboard().isPresent()){
-            for (Entry<String, Long> key:root.ranked_groups.get(pgroup).placeholder_api_requirements.entrySet()){
-                long value = 0;
-                if (Sponge.getPluginManager().getPlugin("placeholderapi").isPresent()) {
-                    Optional<PlaceholderService> phapiOpt = Sponge.getServiceManager().provide(PlaceholderService.class);
-                    if (phapiOpt.isPresent()) {
-                        PlaceholderService phapi = phapiOpt.get();
-                        Optional<Long> optVal = phapi.parse(key.getKey(), p.getPlayer().isPresent() ? p.getPlayer().get(): p, null, Long.class);
-                        if (optVal.isPresent()){
-                            value = optVal.get();
+        if (Sponge.getPluginManager().getPlugin("placeholderapi").isPresent()) {
+            Optional<PlaceholderService> phapiOpt = Sponge.getServiceManager().provide(PlaceholderService.class);
+            if (phapiOpt.isPresent()) {
+                PlaceholderService phapi = phapiOpt.get();
+                for (Entry<String, Long> key:root.ranked_groups.get(pgroup).placeholder_api_requirements.entrySet()){
+                    Optional<Long> optVal = phapi.parse(key.getKey(), p.getPlayer().isPresent() ? p.getPlayer().get(): p, null, Long.class);
+                    if (key.getValue() > 0 && optVal.isPresent()){
+                        if (optVal.get() < key.getValue()){
+                            return false;
                         }
                     }
-                }
-                if (value < key.getValue()){
-                    return false;
                 }
             }
         }
 
-		if (minutesNeeded != 0){
+		if (minutesNeeded > 0){
 			if (RankUpper.get().getStats().getPlayerTime(RankUpper.get().getStats().getPlayerKey(p)) < minutesNeeded){
 				return false;
 			}					
 		}
 
-		if (moneyNeeded != 0 && RankUpper.get().getEconomy() != null){
+		if (moneyNeeded > 0 && RankUpper.get().getEconomy() != null){
 			UniqueAccount acc = RankUpper.get().getEconomy().getOrCreateAccount(p.getUniqueId()).get();
 			if (acc.getBalance(RankUpper.get().getEconomy().getDefaultCurrency()).intValue() < moneyNeeded){
 				return false;
 			} 
 		}
 
-		if (levelNeeded != 0){				
+		if (levelNeeded > 0){
 			if (p.get(Keys.EXPERIENCE_LEVEL).isPresent() && p.get(Keys.EXPERIENCE_LEVEL).get() < levelNeeded){
 				return false;
 			} 

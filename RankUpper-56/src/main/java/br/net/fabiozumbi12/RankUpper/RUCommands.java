@@ -435,22 +435,19 @@ public class RUCommands {
         }
 
         //placeholderAPI requirements
-        if (Sponge.getServer().getServerScoreboard().isPresent()){
-            for (Entry<String, Long> key:RankUpper.get().getConfig().root().ranked_groups.get(pgroup).placeholder_api_requirements.entrySet()){
-                long needed = key.getValue();
-                long actual;
-                if (Sponge.getPluginManager().getPlugin("placeholderapi").isPresent()) {
-                    Optional<PlaceholderService> phapiOpt = Sponge.getServiceManager().provide(PlaceholderService.class);
-                    if (phapiOpt.isPresent() && phapiOpt.get().isRegistered(key.getKey())) {
-                        PlaceholderService phapi = phapiOpt.get();
-                        Optional<Long> optVal = phapi.parse(key.getKey(), playerToCheck.getPlayer().isPresent() ? playerToCheck.getPlayer().get(): playerToCheck, null, Long.class);
-                        if (optVal.isPresent()){
-                            actual = optVal.get();
-                            if (actual >= key.getValue()){
-                                sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.placeholderapi").replace("{placeholder}", key.getKey().replace("%", "")) + ": &a"+actual+"/"+needed + " - " + RankUpper.get().getLang().get("config.ok")));
-                            } else {
-                                sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.placeholderapi").replace("{placeholder}", key.getKey().replace("%", "")) + ": &c"+actual+"/"+needed));
-                            }
+        if (Sponge.getPluginManager().getPlugin("placeholderapi").isPresent()) {
+            Optional<PlaceholderService> phapiOpt = Sponge.getServiceManager().provide(PlaceholderService.class);
+            if (phapiOpt.isPresent()) {
+                PlaceholderService phapi = phapiOpt.get();
+                for (Entry<String, Long> key:RankUpper.get().getConfig().root().ranked_groups.get(pgroup).placeholder_api_requirements.entrySet()){
+                    Optional<Long> optVal = phapi.parse(key.getKey(), playerToCheck.getPlayer().isPresent() ? playerToCheck.getPlayer().get(): playerToCheck, null, Long.class);
+                    if (optVal.isPresent() && phapiOpt.get().isRegistered(key.getKey())){
+                        long needed = key.getValue();
+                        long actual = optVal.get();
+                        if (actual >= key.getValue()){
+                            sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.placeholderapi").replace("{placeholder}", key.getKey().replace("%", "")) + ": &a"+actual+"/"+needed + " - " + RankUpper.get().getLang().get("config.ok")));
+                        } else {
+                            sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.placeholderapi").replace("{placeholder}", key.getKey().replace("%", "")) + ": &c"+actual+"/"+needed));
                         }
                     }
                 }
