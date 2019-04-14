@@ -443,7 +443,7 @@ public class RUCommands {
                     Optional<PlaceholderService> phapiOpt = Sponge.getServiceManager().provide(PlaceholderService.class);
                     if (phapiOpt.isPresent() && phapiOpt.get().isRegistered(key.getKey())) {
                         PlaceholderService phapi = phapiOpt.get();
-                        Optional<Long> optVal = phapi.parse(key.getKey(), playerToCheck, playerToCheck, Long.class);
+                        Optional<Long> optVal = phapi.parse(key.getKey(), playerToCheck.getPlayer().isPresent() ? playerToCheck.getPlayer().get(): playerToCheck, null, Long.class);
                         if (optVal.isPresent()){
                             actual = optVal.get();
                             if (actual >= key.getValue()){

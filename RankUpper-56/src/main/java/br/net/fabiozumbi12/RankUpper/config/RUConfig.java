@@ -191,7 +191,7 @@ public class RUConfig {
                     Optional<PlaceholderService> phapiOpt = Sponge.getServiceManager().provide(PlaceholderService.class);
                     if (phapiOpt.isPresent()) {
                         PlaceholderService phapi = phapiOpt.get();
-                        Optional<Long> optVal = phapi.parse(key.getKey(), p, p, Long.class);
+                        Optional<Long> optVal = phapi.parse(key.getKey(), p.getPlayer().isPresent() ? p.getPlayer().get(): p, null, Long.class);
                         if (optVal.isPresent()){
                             value = optVal.get();
                         }
