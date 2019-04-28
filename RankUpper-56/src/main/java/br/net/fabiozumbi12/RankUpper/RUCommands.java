@@ -383,11 +383,12 @@ public class RUCommands {
 
 		if (moneyNeeded > 0 && RankUpper.get().getEconomy() != null){
 			UniqueAccount acc = RankUpper.get().getEconomy().getOrCreateAccount(playerToCheck.getUniqueId()).get();
-			int usermoney = acc.getBalance(RankUpper.get().getEconomy().getDefaultCurrency()).intValue();
-			if (usermoney >= moneyNeeded){
-				sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.money") + ": &a" + RankUpper.get().getLang().get("config.cifra")+" "+ usermoney+"/"+moneyNeeded + " - " + RankUpper.get().getLang().get("config.ok")));
+			double userMoney = acc.getBalance(RankUpper.get().getEconomy().getDefaultCurrency()).doubleValue();
+			String userMoneyStr = String.format("%.2f",userMoney);
+			if (userMoney >= moneyNeeded){
+				sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.money") + ": &a" + RankUpper.get().getLang().get("config.cifra")+" "+ userMoneyStr+"/"+moneyNeeded + " - " + RankUpper.get().getLang().get("config.ok")));
 			} else {
-				sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.money") + ": &c" + RankUpper.get().getLang().get("config.cifra")+" "+ usermoney+"/"+moneyNeeded));
+				sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.money") + ": &c" + RankUpper.get().getLang().get("config.cifra")+" "+ userMoneyStr+"/"+moneyNeeded));
 			}
 		}
 
