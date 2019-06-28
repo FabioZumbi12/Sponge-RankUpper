@@ -236,9 +236,7 @@ public class RUCommands {
 			    		src.sendMessage(RUUtil.toText("&7Group: &a"+key));
 			    		try {
 			    			src.sendMessage(RUUtil.toText("&7Commands: "));
-							groups.get(key).execute_commands.forEach((cmd)->{
-								src.sendMessage(RUUtil.toText("&a-- &b"+cmd));
-							});
+							groups.get(key).execute_commands.forEach((cmd)-> src.sendMessage(RUUtil.toText("&a-- &b"+cmd)));
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
