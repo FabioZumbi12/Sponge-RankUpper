@@ -1,6 +1,6 @@
 package br.net.fabiozumbi12.RankUpper.config;
 
-import br.net.fabiozumbi12.RankUpper.RUAFK;
+import br.net.fabiozumbi12.RankUpper.hooks.RUAFK;
 import br.net.fabiozumbi12.RankUpper.RUUtil;
 import br.net.fabiozumbi12.RankUpper.RankUpper;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;

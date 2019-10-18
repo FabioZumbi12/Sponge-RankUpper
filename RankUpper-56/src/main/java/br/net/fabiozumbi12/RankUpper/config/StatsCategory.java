@@ -1,7 +1,5 @@
 package br.net.fabiozumbi12.RankUpper.config;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class StatsCategory {
@@ -10,6 +8,11 @@ public class StatsCategory {
     public ConcurrentHashMap<String, PlayerInfoCategory> players = new ConcurrentHashMap<>();
 
     public static class PlayerInfoCategory {
+        public String JoinDate = "";
+        public String LastVisit = "";
+        public String PlayerName = "";
+        public int TimePlayed = 0;
+
         public PlayerInfoCategory(){}
 
         public PlayerInfoCategory(String JoinDate, String LastVisit, String PlayerName, int TimePlayed){
@@ -18,10 +21,5 @@ public class StatsCategory {
             this.PlayerName = PlayerName;
             this.TimePlayed = TimePlayed;
         }
-
-        public String JoinDate = "";
-        public String LastVisit = "";
-        public String PlayerName = "";
-        public int TimePlayed = 0;
     }
 }

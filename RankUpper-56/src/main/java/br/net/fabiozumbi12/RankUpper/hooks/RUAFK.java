@@ -1,12 +1,11 @@
-package br.net.fabiozumbi12.RankUpper;
-
-import java.util.Optional;
+package br.net.fabiozumbi12.RankUpper.hooks;
 
 import io.github.nucleuspowered.nucleus.api.service.NucleusAFKService;
-
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.ProviderRegistration;
+
+import java.util.Optional;
 
 public class RUAFK {
 	private static Optional<ProviderRegistration<NucleusAFKService>> prov;

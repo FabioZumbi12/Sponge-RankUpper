@@ -1,14 +1,11 @@
 package br.net.fabiozumbi12.RankUpper;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.concurrent.TimeUnit;
-
 import br.net.fabiozumbi12.RankUpper.config.PlayerStatsDB;
 import br.net.fabiozumbi12.RankUpper.config.RUConfig;
-
+import br.net.fabiozumbi12.RankUpper.config.VersionData;
+import br.net.fabiozumbi12.RankUpper.hooks.PlaceholdersAPI;
+import br.net.fabiozumbi12.RankUpper.hooks.RUAFK;
+import com.google.inject.Inject;
 import ninja.leaping.configurate.objectmapping.GuiceObjectMapperFactory;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Platform.Component;
@@ -24,13 +21,14 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.service.economy.EconomyService;
-
-import br.net.fabiozumbi12.RankUpper.config.VersionData;
-
-import com.google.inject.Inject;
 import org.spongepowered.api.service.sql.SqlService;
 
 import javax.sql.DataSource;
+import java.io.File;
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
 
 @Plugin(id="rankupper", 
 name="RankUpper", 
@@ -38,7 +36,7 @@ version=VersionData.VERSION,
 authors="FabioZumbi12", 
 description="Auto rankup plugin based on various requirements",
 dependencies = {
-        @Dependency(id = "placeholderapi", optional = true)
+        @Dependency(id = "placeholderapi", version = "[4.0,)", optional = true)
 })
 public class RankUpper {
 	
@@ -149,7 +147,12 @@ public class RankUpper {
             
             //hook afk with nucleus
             registerNucleus();
-            
+
+            //register placeholdersapi
+            if (Sponge.getPluginManager().getPlugin("placeholderapi").isPresent()) {
+                new PlaceholdersAPI(this);
+            }
+
             logger.success("RankUpper enabled.");
             
         } catch (Exception e) {
