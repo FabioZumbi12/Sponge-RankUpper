@@ -36,7 +36,7 @@ version=VersionData.VERSION,
 authors="FabioZumbi12", 
 description="Auto rankup plugin based on various requirements",
 dependencies = {
-        @Dependency(id = "placeholderapi", version = "[4.0,)", optional = true)
+        @Dependency(id = "placeholderapi", optional = true)
 })
 public class RankUpper {
 	
@@ -150,6 +150,7 @@ public class RankUpper {
 
             //register placeholdersapi
             if (Sponge.getPluginManager().getPlugin("placeholderapi").isPresent()) {
+                logger.info("Registering placeholders...");
                 new PlaceholdersAPI(this);
             }
 

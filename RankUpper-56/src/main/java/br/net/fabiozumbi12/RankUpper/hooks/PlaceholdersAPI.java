@@ -50,10 +50,10 @@ public class PlaceholdersAPI {
     }
 
     @Placeholder(id = "rankupper-timeplayed-halfhours")
-    public long timeHoursHalf(@Source Player p) {
+    public String timeHoursHalf(@Source Player p) {
         long time = RankUpper.get().getStats().stats().players.getOrDefault(RankUpper.get().getStats().getPlayerKey(p), new StatsCategory.PlayerInfoCategory()).TimePlayed;
         long day = TimeUnit.MINUTES.toDays(time);
-        return TimeUnit.MINUTES.toHours(time-TimeUnit.DAYS.toMinutes(day));
+        return String.valueOf(TimeUnit.MINUTES.toHours(time-TimeUnit.DAYS.toMinutes(day)));
     }
 
     @Placeholder(id = "rankupper-timeplayed-fullhours")
