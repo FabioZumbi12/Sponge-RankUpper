@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>br.net.fabiozumbi12.RankUpper</groupId>
 		<artifactId>RankUpper</artifactId>
-		<version>4.0.4</version>
+		<version>4.0.5</version>
 	</parent>
 	<artifactId>RankUpper-7.0-8.0</artifactId>
 
