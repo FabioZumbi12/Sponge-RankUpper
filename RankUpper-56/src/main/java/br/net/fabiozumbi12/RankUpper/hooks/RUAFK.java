@@ -1,6 +1,6 @@
 package br.net.fabiozumbi12.RankUpper.hooks;
 
-import io.github.nucleuspowered.nucleus.api.service.NucleusAFKService;
+import io.github.nucleuspowered.nucleus.api.module.afk.NucleusAFKService;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.ProviderRegistration;
