@@ -8,4 +8,4 @@ Sponge: https://ore.spongepowered.org/FabioZumbi12/RankUpper
 The source is available on GitHub: https://github.com/FabioZumbi12/Sponge-RankUpper
 
 ## Dev Builds:
-Dev builds on Jenkins: [![Build Status](http://host.areaz12server.net.br:8080/buildStatus/icon?job=RankUpper)](http://host.areaz12server.net.br:8080/job/RankUpper/)
+Dev builds on Jenkins: [![Build Status](http://host.areaz12server.net.br:8081/buildStatus/icon?job=RankUpper)](http://host.areaz12server.net.br:8080/job/RankUpper/)
