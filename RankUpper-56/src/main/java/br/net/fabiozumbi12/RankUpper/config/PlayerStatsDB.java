@@ -9,6 +9,8 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.scheduler.Scheduler;
+import org.spongepowered.api.scheduler.Task;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +24,8 @@ import java.util.Map;
 public class PlayerStatsDB {
 
     private StatsCategory stats;
-    public StatsCategory stats(){
+
+    public StatsCategory stats() {
         return this.stats;
     }
 
@@ -32,7 +35,7 @@ public class PlayerStatsDB {
         try {
             //convert old stats db
             File statConfig = new File(RankUpper.get().getConfigDir(), "playerstats.conf");
-            if (statConfig.exists()){
+            if (statConfig.exists()) {
                 ConfigurationLoader<CommentedConfigurationNode> statsManager = HoconConfigurationLoader.builder().setFile(statConfig).build();
                 CommentedConfigurationNode tempStats = statsManager.load();
                 RankUpper.get().getLogger().warning("Converting player stats to new format...");
@@ -43,18 +46,18 @@ public class PlayerStatsDB {
                             node.getValue().getNode("PlayerName").getString(),
                             node.getValue().getNode("TimePlayed").getInt()
                     ));
-                    RankUpper.get().getLogger().warning("Importing: "+node.getKey().toString()+" = "
-                            + node.getValue().getNode("JoinDate").getString()+", "
-                            + node.getValue().getNode("LastVisist").getString()+", "
-                            + node.getValue().getNode("PlayerName").getString()+", "
-                            + node.getValue().getNode("TimePlayed").getString()+", ");
+                    RankUpper.get().getLogger().warning("Importing: " + node.getKey().toString() + " = "
+                            + node.getValue().getNode("JoinDate").getString() + ", "
+                            + node.getValue().getNode("LastVisist").getString() + ", "
+                            + node.getValue().getNode("PlayerName").getString() + ", "
+                            + node.getValue().getNode("TimePlayed").getString() + ", ");
                 }
                 RankUpper.get().getLogger().warning("Player stats imported to database!");
                 File backup = new File(RankUpper.get().getConfigDir(), "playerstats-old.conf");
                 if (backup.exists()) backup.delete();
                 statConfig.renameTo(new File(RankUpper.get().getConfigDir(), "playerstats-old.conf"));
             }
-        } catch(IOException e1){
+        } catch (IOException e1) {
             e1.printStackTrace();
         }
 
@@ -64,7 +67,7 @@ public class PlayerStatsDB {
         savePlayersStats();
     }
 
-    public void loadPlayerStats(){
+    public void loadPlayerStats() {
         //begin start
         try (Connection conn = RankUpper.get().getConnection()) {
 
@@ -93,9 +96,22 @@ public class PlayerStatsDB {
         }
     }
 
-    public void savePlayersStats(){
+    public void savePlayersStats() {
+        Task t = Task.builder().execute(() -> {
+            save();
+        }).async().submit(RankUpper.get());
+    }
+
+    public void save() {
         try (Connection conn = RankUpper.get().getConnection()) {
-            for (Map.Entry<String, StatsCategory.PlayerInfoCategory> stat:stats.players.entrySet()){
+            String sql = "INSERT INTO " + RankUpper.get().getConfig().root().database.prefix + "players (uuid, joindate, lastvisit, name, time) VALUES(?, ?, ?, ?, ?) " +
+                    "ON DUPLICATE KEY UPDATE " +
+                    "joindate = ?, " +
+                    "lastvisit = ?, " +
+                    "name = ?, " +
+                    "time = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            for (Map.Entry<String, StatsCategory.PlayerInfoCategory> stat : stats.players.entrySet()) {
                 if (stat.getValue().PlayerName == null)
                     continue;
 
@@ -107,14 +123,6 @@ public class PlayerStatsDB {
                         "\nTimePlayed: " + stat.getValue().TimePlayed
                 );
 
-                String sql = "INSERT INTO " + RankUpper.get().getConfig().root().database.prefix + "players (uuid, joindate, lastvisit, name, time) VALUES(?, ?, ?, ?, ?) " +
-                        "ON DUPLICATE KEY UPDATE " +
-                        "joindate = ?, " +
-                        "lastvisit = ?, " +
-                        "name = ?, " +
-                        "time = ?";
-
-                PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1, stat.getKey());
                 stmt.setString(2, stat.getValue().JoinDate);
                 stmt.setString(3, stat.getValue().LastVisit);
@@ -125,9 +133,9 @@ public class PlayerStatsDB {
                 stmt.setString(7, stat.getValue().LastVisit);
                 stmt.setString(8, stat.getValue().PlayerName);
                 stmt.setInt(9, stat.getValue().TimePlayed);
-
-                stmt.executeUpdate();
+                stmt.addBatch();
             }
+            stmt.executeBatch();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -135,7 +143,7 @@ public class PlayerStatsDB {
 
     public void AddPlayer(User p) {
         String PlayerString;
-        if (RankUpper.get().getConfig().root().use_uuids_instead_names){
+        if (RankUpper.get().getConfig().root().use_uuids_instead_names) {
             PlayerString = p.getUniqueId().toString();
         } else {
             PlayerString = p.getName();
@@ -146,33 +154,33 @@ public class PlayerStatsDB {
         savePlayersStats();
     }
 
-    public void setPlayerTime(String pkey, int time){
+    public void setPlayerTime(String pkey, int time) {
         if (stats.players.containsKey(pkey)) stats.players.get(pkey).TimePlayed = time;
     }
 
-    public int addPlayerTime(User p, int amount){
+    public int addPlayerTime(User p, int amount) {
         String PlayerString = getPlayerKey(p);
-        int time = stats.players.get(PlayerString).TimePlayed+amount;
+        int time = stats.players.get(PlayerString).TimePlayed + amount;
         stats.players.get(PlayerString).TimePlayed = (time);
         return time;
     }
 
-    public void setLastVisit(User p){
+    public void setLastVisit(User p) {
         String PlayerString = getPlayerKey(p);
         stats.players.get(PlayerString).LastVisit = RUUtil.DateNow();
     }
 
-    public int getPlayerTime(String uuid){
+    public int getPlayerTime(String uuid) {
         return stats.players.containsKey(uuid) ? stats.players.get(uuid).TimePlayed : 0;
     }
 
-    public String getPlayerKey(User user){
-        if (RankUpper.get().getConfig().root().use_uuids_instead_names && stats.players.containsKey(user.getUniqueId().toString())){
+    public String getPlayerKey(User user) {
+        if (RankUpper.get().getConfig().root().use_uuids_instead_names && stats.players.containsKey(user.getUniqueId().toString())) {
             return user.getUniqueId().toString();
-        } else if (!RankUpper.get().getConfig().root().use_uuids_instead_names && stats.players.containsKey(user.getName())){
+        } else if (!RankUpper.get().getConfig().root().use_uuids_instead_names && stats.players.containsKey(user.getName())) {
             return user.getName();
         } else {
-            for (Map.Entry<String, StatsCategory.PlayerInfoCategory> values:stats.players.entrySet()){
+            for (Map.Entry<String, StatsCategory.PlayerInfoCategory> values : stats.players.entrySet()) {
                 if (values.getValue().PlayerName != null && values.getValue().PlayerName.equals(user.getName()))
                     return values.getKey();
             }
@@ -180,7 +188,7 @@ public class PlayerStatsDB {
         return null;
     }
 
-    public HashMap<String, Object> getPlayerDB(User p){
+    public HashMap<String, Object> getPlayerDB(User p) {
         HashMap<String, Object> pdb = new HashMap<>();
 
         String PlayerString = getPlayerKey(p);
@@ -192,11 +200,11 @@ public class PlayerStatsDB {
     }
 
     public void AddPlayerTimes() {
-        for (Player p: Sponge.getServer().getOnlinePlayers()){
+        for (Player p : Sponge.getServer().getOnlinePlayers()) {
 
-            if (RankUpper.get().getConfig().root().afk_support){
+            if (RankUpper.get().getConfig().root().afk_support) {
                 RankUpper.get().getLogger().debug("Berore check AFK!");
-                if (RUAFK.isAFK(p)){
+                if (RUAFK.isAFK(p)) {
                     RankUpper.get().getLogger().debug("After check AFK!");
                     continue;
                 }
