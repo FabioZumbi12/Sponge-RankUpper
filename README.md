@@ -1,5 +1,5 @@
 ![logo](http://image.prntscr.com/image/1a26481602b040c0a8ac814fff3c20ee.jpeg)  
-Plugin to promote players based on requeriments.
+Plugin to promote players based on requirements.
 
 ## Available versions:
 Sponge: https://ore.spongepowered.org/FabioZumbi12/RankUpper
