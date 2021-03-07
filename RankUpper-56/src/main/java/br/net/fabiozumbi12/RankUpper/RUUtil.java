@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import me.rojo8399.placeholderapi.PlaceholderService;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
@@ -62,6 +65,14 @@ public class RUUtil {
             sortedMap.put(entry.getKey(), entry.getValue());
         }
 		return sortedMap;
+	}
+
+	public static double getPlaceholderValue(PlaceholderService papi, String placeholder, User p) {
+		Text text = papi.replacePlaceholders(placeholder, p, null);
+		if (text != null && !text.isEmpty() && text.toPlain() != null) {
+			return Double.parseDouble(text.toPlain());
+		}
+		return 0;
 	}
 	
 	public static Text toText(String str){
