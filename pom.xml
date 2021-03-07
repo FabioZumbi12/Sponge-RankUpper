@@ -15,10 +15,11 @@
 	</scm>
 
 	<repositories>
+		<!-- Sponge repos -->
 		<repository>
 			<id>sponge-maven-repo</id>
 			<name>Sponge maven repo</name>
-			<url>http://repo.spongepowered.org/maven</url>
+			<url>https://repo.spongepowered.org/repository/maven-public/</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
@@ -26,6 +27,7 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+
 		<repository>
 			<id>repo-drnaylor</id>
 			<name>dualspiral's repo</name>
