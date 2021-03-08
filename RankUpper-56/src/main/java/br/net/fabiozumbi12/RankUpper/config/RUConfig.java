@@ -42,7 +42,9 @@ public class RUConfig {
         try {
             Files.createDirectories(RankUpper.get().getConfigDir().toPath());
             File defConfig = new File(RankUpper.get().getConfigDir(), "rankupper.conf");
+            boolean newConfig = false;
             if (!defConfig.exists()) {
+                newConfig = true;
                 RankUpper.get().getLogger().log("Creating config file...");
                 defConfig.createNewFile();
             }
@@ -62,18 +64,20 @@ public class RUConfig {
                         120,
                         1000,
                         "member");
-                rgc.minecraft_statistic.put("MOB_KILLS", 100L);
-                rgc.minecraft_scoreboards.put("TeamBlue", 50L);
-                rgc.placeholder_api_requirements.put("%Pokedex%", 200L);
-                root.ranked_groups.put("group-example", rgc);
+                if (newConfig) {
+                    rgc.minecraft_statistic.put("MOB_KILLS", 100L);
+                    rgc.minecraft_scoreboards.put("TeamBlue", 50L);
+                    rgc.placeholder_api_requirements.put("%Pokedex%", 200L);
+                    root.ranked_groups.put("group-example", rgc);
+                }
             }
 
             for (RankedGroupsCategory group : root.ranked_groups.values()) {
-                if (group.minecraft_statistic.isEmpty())
+                if (newConfig && group.minecraft_statistic.isEmpty())
                     group.minecraft_statistic.put("MOB_KILLS", -1L);
-                if (group.minecraft_scoreboards.isEmpty())
+                if (newConfig && group.minecraft_scoreboards.isEmpty())
                     group.minecraft_scoreboards.put("TeamBlue", -1L);
-                if (group.placeholder_api_requirements.isEmpty())
+                if (newConfig && group.placeholder_api_requirements.isEmpty())
                     group.placeholder_api_requirements.put("%Pokedex%", -1L);
             }
 

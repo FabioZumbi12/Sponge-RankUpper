@@ -70,7 +70,14 @@ public class RUUtil {
 	public static double getPlaceholderValue(PlaceholderService papi, String placeholder, User p) {
 		Text text = papi.replacePlaceholders(placeholder, p, null);
 		if (text != null && !text.isEmpty() && text.toPlain() != null) {
-			return Double.parseDouble(text.toPlain());
+			try
+			{
+				return Double.parseDouble(text.toPlain());
+			}
+			catch(NumberFormatException e)
+			{
+				return 0;
+			}
 		}
 		return 0;
 	}
