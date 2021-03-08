@@ -480,7 +480,7 @@ public class RUCommands {
                     if (optVal >= key.getValue()) {
                         sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.placeholderapi." + key.getKey() + ".ok").replace("{current}", optVal + "").replace("{target}", needed + "")));
                     } else {
-                        sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.placeholderapi." + key.getKey()+ ".incomplete").replace("{current}", optVal + "").replace("{target}", needed + "")));
+                        sender.sendMessage(RUUtil.toText(RankUpper.get().getLang().get("config.placeholderapi." + key.getKey() + ".incomplete").replace("{current}", optVal + "").replace("{target}", needed + "")));
                     }
                 }
             }
